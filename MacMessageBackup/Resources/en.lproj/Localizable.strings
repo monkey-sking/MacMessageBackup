@@ -1,0 +1,144 @@
+/* Main Window */
+"app.title" = "Mac Message Backup";
+"app.status.ready" = "Ready";
+"app.status.backing_up" = "Backing up...";
+"app.status.complete" = "Backup complete!";
+"app.status.failed" = "Backup failed";
+
+/* Database Status */
+"database.messages.connected" = "Messages Database Connected";
+"database.messages.not_connected" = "Messages Database Not Connected";
+"database.calls.connected" = "Call History Connected";
+"database.calls.not_connected" = "Call History Not Connected";
+"database.grant_access" = "Please grant Full Disk Access in System Settings > Privacy & Security";
+
+/* Statistics */
+"stats.messages" = "Messages";
+"stats.calls" = "Call Records";
+"stats.total" = "Total";
+"stats.backed_up" = "Backed Up";
+"stats.pending" = "Pending";
+
+/* Buttons */
+"button.backup_now" = "Backup Now";
+"button.stop" = "Stop";
+"button.save" = "Save";
+"button.test_connection" = "Test Connection";
+"button.sign_in_google" = "Sign in with Google";
+"button.sign_out" = "Sign Out";
+"button.reset" = "Reset";
+"button.cancel" = "Cancel";
+
+/* Settings */
+"settings.title" = "Settings";
+"settings.gmail" = "Gmail";
+"settings.backup" = "Backup";
+"settings.advanced" = "Advanced";
+"settings.about" = "About";
+
+/* Gmail Settings */
+"settings.gmail.auth_method" = "Authentication Method";
+"settings.gmail.oauth" = "OAuth 2.0";
+"settings.gmail.app_password" = "App Password";
+"settings.gmail.email" = "Email";
+"settings.gmail.password" = "App Password";
+"settings.gmail.password_hint" = "Use a Gmail App Password, not your regular password.";
+"settings.gmail.create_password" = "How to create an App Password";
+"settings.gmail.client_id" = "Client ID";
+"settings.gmail.client_secret" = "Client Secret";
+"settings.gmail.connected" = "Connected";
+"settings.gmail.not_connected" = "Not Connected";
+
+/* Backup Labels */
+"settings.labels.sms" = "SMS Label";
+"settings.labels.call_log" = "Call Log Label";
+
+/* Backup Options */
+"settings.backup.messages" = "Messages (iMessage/SMS)";
+"settings.backup.call_log" = "Call Log";
+"settings.backup.calendar_sync" = "Sync Call Log to Google Calendar";
+"settings.backup.auto_enabled" = "Enable Auto Backup";
+"settings.backup.interval" = "Interval";
+
+/* Intervals */
+"interval.15min" = "15 minutes";
+"interval.30min" = "30 minutes";
+"interval.1hour" = "1 hour";
+"interval.2hours" = "2 hours";
+"interval.6hours" = "6 hours";
+"interval.12hours" = "12 hours";
+"interval.daily" = "Daily";
+
+/* Advanced Settings */
+"settings.advanced.smtp_host" = "SMTP Host";
+"settings.advanced.smtp_port" = "SMTP Port";
+"settings.advanced.use_ssl" = "Use SSL";
+"settings.advanced.reset_progress" = "Reset Backup Progress";
+"settings.advanced.reset_warning" = "This will cause the next backup to re-upload all data.";
+"settings.advanced.reset_messages" = "Reset Messages";
+"settings.advanced.reset_call_log" = "Reset Call Log";
+"settings.advanced.database_paths" = "Database Paths";
+"settings.advanced.messages_db" = "Messages DB";
+"settings.advanced.call_history_db" = "Call History DB";
+
+/* About */
+"about.version" = "Version";
+"about.inspired_by" = "Inspired by SMS Backup+ for Android";
+
+/* Menu Bar */
+"menu.backup_now" = "Backup Now";
+"menu.auto_backup" = "Auto Backup";
+"menu.settings" = "Settings...";
+"menu.quit" = "Quit";
+
+/* OAuth */
+"oauth.how_to" = "How to get OAuth credentials";
+"oauth.step1" = "1. Go to Google Cloud Console";
+"oauth.step2" = "2. Create a new project";
+"oauth.step3" = "3. Enable Gmail API and Calendar API";
+"oauth.step4" = "4. Create OAuth 2.0 Client ID (Desktop app)";
+"oauth.step5" = "5. Copy Client ID and Secret here";
+
+/* Errors */
+"error.no_password" = "No password configured. Please set your Gmail App Password.";
+"error.connection_failed" = "Failed to connect to mail server.";
+"error.auth_failed" = "Authentication failed. Check your email and password.";
+"error.database_not_connected" = "Database not connected. Please grant Full Disk Access.";
+
+/* Call Types */
+"call.incoming" = "Incoming";
+"call.outgoing" = "Outgoing";
+"call.missed" = "Missed";
+"call.blocked" = "Blocked";
+"call.unknown" = "Unknown";
+
+/* Backup Results */
+"result.messages_backed_up" = "%d messages backed up";
+"result.calls_backed_up" = "%d call records backed up";
+"result.calendar_synced" = "%d calendar events synced";
+"result.nothing_new" = "Nothing new to backup";
+
+/* Permission Request */
+"permission.title" = "Full Disk Access Required";
+"permission.description" = "Mac Message Backup needs access to Messages and Call History databases to perform backups.";
+"permission.step1" = "Click the button below to open System Settings";
+"permission.step2" = "Click the + button to add an app";
+"permission.step3" = "Select Mac Message Backup";
+"permission.step4" = "Return to this app and click \"Check Permission\"";
+"permission.open_settings" = "Open System Settings";
+"permission.check" = "Check Permission";
+"permission.app_location" = "App location:";
+
+/* Backup Progress Messages */
+"Starting backup..." = "Starting backup...";
+"Reading messages..." = "Reading messages...";
+"Reading call history..." = "Reading call history...";
+"Backup complete!" = "Backup complete!";
+"✅ Message %d/%d backed up" = "✅ Message %d/%d backed up";
+"Backing up %d messages..." = "Backing up %d messages...";
+"✅ Call record %d/%d backed up" = "✅ Call record %d/%d backed up";
+"Backing up %d call records..." = "Backing up %d call records...";
+"Syncing %d calls to Calendar..." = "Syncing %d calls to Calendar...";
+"Cancel" = "Cancel";
+"Backup cancelled" = "Backup cancelled";
+"Backup was cancelled" = "Backup was cancelled";

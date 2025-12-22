@@ -1,0 +1,387 @@
+/* Main Window - English Keys for SwiftUI */
+"Mac Message Backup" = "Mac 信息备份";
+"Backup iMessage & Call History to Gmail" = "备份 iMessage 和通话记录到 Gmail";
+"Messages" = "信息";
+"Call Records" = "通话记录";
+"Backup Now" = "立即备份";
+"Backing up..." = "正在备份...";
+"Test" = "测试";
+"Test completed" = "测试完成";
+"Running test..." = "正在测试...";
+"Ready" = "准备就绪";
+"Messages Database" = "信息数据库";
+"Call History" = "通话记录";
+"Gmail" = "Gmail";
+"Calendar" = "日历";
+"Connected" = "已连接";
+"Not Connected" = "未连接";
+"Status" = "状态";
+"Statistics" = "统计";
+"messages" = "条信息";
+"call records" = "条通话记录";
+"Open Settings" = "打开设置";
+"Gmail not configured" = "Gmail 未配置";
+"Open Settings to configure your Gmail account" = "打开设置以配置您的 Gmail 账户";
+"Last backup:" = "上次备份:";
+"Operation Log" = "操作日志";
+"No log entries." = "暂无日志";
+"Clear Log" = "清除日志";
+"Starting test backup..." = "开始测试备份...";
+"Test backup completed" = "测试备份完成";
+"Nothing new to backup" = "没有新内容需要备份";
+"Backed up:" = "已备份:";
+
+/* Startup Check Logs */
+"🚀 Starting permission checks..." = "🚀 正在检查权限...";
+"✅ Messages database: Connected" = "✅ 信息数据库: 已连接";
+"⚠️ Messages database: No access - Need Full Disk Access permission" = "⚠️ 信息数据库: 无访问权限 - 需要完全磁盘访问权限";
+"✅ Call history database: Connected" = "✅ 通话记录数据库: 已连接";
+"⚠️ Call history database: No access - Need Full Disk Access permission" = "⚠️ 通话记录数据库: 无访问权限 - 需要完全磁盘访问权限";
+"✅ Gmail account: " = "✅ Gmail 账号: ";
+"⚠️ Gmail account: Not configured" = "⚠️ Gmail 账号: 未配置";
+"✅ Gmail App Password: Configured" = "✅ Gmail 应用密码: 已配置";
+"⚠️ Gmail App Password: Not configured" = "⚠️ Gmail 应用密码: 未配置";
+"✅ Calendar access: Authorized" = "✅ 日历访问: 已授权";
+"⚠️ Calendar access: Not authorized" = "⚠️ 日历访问: 未授权";
+"✅ Calendar access: Granted" = "✅ 日历访问: 已授权";
+"❌ Calendar access: Denied" = "❌ 日历访问: 已拒绝";
+"✅ Startup checks completed" = "✅ 启动检查完成";
+"Skip for now" = "暂时跳过";
+
+/* Main Window - Key-based */
+"app.title" = "Mac 信息备份";
+"app.status.ready" = "准备就绪";
+"app.status.backing_up" = "正在备份...";
+"app.status.complete" = "备份完成！";
+"app.status.failed" = "备份失败";
+
+/* Database Status */
+"database.messages.connected" = "信息数据库已连接";
+"database.messages.not_connected" = "信息数据库未连接";
+"database.calls.connected" = "通话记录已连接";
+"database.calls.not_connected" = "通话记录未连接";
+"database.grant_access" = "请在 系统设置 > 隐私与安全 中授予完全磁盘访问权限";
+
+/* Statistics */
+"stats.messages" = "信息";
+"stats.calls" = "通话记录";
+"stats.total" = "总计";
+"stats.backed_up" = "已备份";
+"stats.pending" = "待备份";
+"Backup Statistics" = "备份统计";
+"Messages" = "信息";
+"Call Records" = "通话记录";
+"Total:" = "总计:";
+"Backed up:" = "已备份:";
+"Remaining:" = "待备份:";
+"Reset Progress" = "重置进度";
+"Backup progress reset" = "备份进度已重置";
+
+/* Buttons */
+"button.backup_now" = "立即备份";
+"button.stop" = "停止";
+"button.save" = "保存";
+"button.test_connection" = "测试连接";
+"button.sign_in_google" = "使用 Google 登录";
+"button.sign_out" = "退出登录";
+"button.reset" = "重置";
+"button.cancel" = "取消";
+
+/* Appearance Settings */
+"Appearance" = "外观";
+"Hide Dock Icon" = "隐藏 Dock 图标";
+"Run in background with menu bar icon only" = "仅在菜单栏运行，不显示 Dock 图标";
+"Show Menu Bar Icon" = "显示菜单栏图标";
+"Display icon in menu bar for quick access" = "在菜单栏显示图标，方便快速访问";
+"Cannot Hide Menu Bar" = "无法隐藏菜单栏";
+"Menu bar icon cannot be hidden when Dock icon is also hidden. This would make the app inaccessible." = "当 Dock 图标也被隐藏时，无法隐藏菜单栏图标，否则将无法访问应用。";
+"Show Window" = "显示主窗口";
+"Quit Mac Message Backup" = "退出 Mac Message Backup";
+
+/* Settings */
+"settings.title" = "设置";
+"settings.gmail" = "Gmail";
+"settings.backup" = "备份";
+"settings.advanced" = "高级";
+"settings.about" = "关于";
+
+/* Gmail Settings */
+"settings.gmail.auth_method" = "认证方式";
+"settings.gmail.oauth" = "OAuth 2.0";
+"settings.gmail.app_password" = "应用专用密码";
+"settings.gmail.email" = "邮箱";
+"settings.gmail.password" = "应用专用密码";
+"settings.gmail.password_hint" = "请使用 Gmail 应用专用密码，而非普通密码。";
+"settings.gmail.create_password" = "如何创建应用专用密码";
+"settings.gmail.client_id" = "客户端 ID";
+"settings.gmail.client_secret" = "客户端密钥";
+"settings.gmail.connected" = "已连接";
+"settings.gmail.not_connected" = "未连接";
+
+/* Backup Labels */
+"settings.labels.sms" = "短信标签";
+"settings.labels.call_log" = "通话记录标签";
+
+/* Backup Options */
+"settings.backup.messages" = "信息 (iMessage/短信)";
+"settings.backup.call_log" = "通话记录";
+"settings.backup.calendar_sync" = "同步通话记录到 Google 日历";
+"settings.backup.auto_enabled" = "启用自动备份";
+"settings.backup.interval" = "备份间隔";
+
+/* Intervals */
+"interval.15min" = "15 分钟";
+"interval.30min" = "30 分钟";
+"interval.1hour" = "1 小时";
+"interval.2hours" = "2 小时";
+"interval.6hours" = "6 小时";
+"interval.12hours" = "12 小时";
+"interval.daily" = "每天";
+
+/* Advanced Settings */
+"settings.advanced.smtp_host" = "SMTP 服务器";
+"settings.advanced.smtp_port" = "SMTP 端口";
+"settings.advanced.use_ssl" = "使用 SSL";
+"settings.advanced.reset_progress" = "重置备份进度";
+"settings.advanced.reset_warning" = "这将导致下次备份重新上传所有数据。";
+"settings.advanced.reset_messages" = "重置信息";
+"settings.advanced.reset_call_log" = "重置通话记录";
+"settings.advanced.database_paths" = "数据库路径";
+"settings.advanced.messages_db" = "信息数据库";
+"settings.advanced.call_history_db" = "通话记录数据库";
+
+/* About */
+"about.version" = "版本";
+"about.inspired_by" = "灵感来自 Android 版 SMS Backup+";
+
+/* Menu Bar */
+"menu.backup_now" = "立即备份";
+"menu.auto_backup" = "自动备份";
+"menu.settings" = "设置...";
+"menu.quit" = "退出";
+"Auto Backup" = "自动备份";
+"Settings..." = "设置...";
+"Quit" = "退出";
+
+/* OAuth */
+"oauth.how_to" = "如何获取 OAuth 凭据";
+"oauth.step1" = "1. 访问 Google Cloud Console";
+"oauth.step2" = "2. 创建新项目";
+"oauth.step3" = "3. 启用 Gmail API 和 Calendar API";
+"oauth.step4" = "4. 创建 OAuth 2.0 客户端 ID (桌面应用)";
+"oauth.step5" = "5. 复制客户端 ID 和密钥到此处";
+
+/* Errors */
+"error.no_password" = "未配置密码。请设置 Gmail 应用专用密码。";
+"error.connection_failed" = "无法连接邮件服务器。";
+"error.auth_failed" = "认证失败。请检查邮箱和密码。";
+"error.database_not_connected" = "数据库未连接。请授予完全磁盘访问权限。";
+
+/* Email Format Settings */
+"Email Format" = "邮件格式";
+"Format Preset" = "格式预设";
+"Chinese Style" = "中文格式";
+"English Style" = "英文格式";
+"SMS Backup+ Compatible" = "SMS Backup+ 兼容";
+"Compact Style" = "简洁格式";
+"Use Custom Format" = "使用自定义格式";
+"Available placeholders: {contact}, {type}, {date}, {duration}, {emoji}" = "可用占位符: {contact} 联系人, {type} 类型, {date} 日期, {duration} 时长, {emoji} 表情";
+"SMS Subject" = "短信标题";
+"Call Subject" = "通话标题";
+"Calendar Title" = "日历标题";
+"Call Body" = "通话正文";
+"Preview" = "预览";
+"SMS Subject:" = "短信标题:";
+"Call Subject:" = "通话标题:";
+"Call Body:" = "通话正文:";
+
+/* Call Types */
+"call.incoming" = "来电";
+"call.outgoing" = "去电";
+"call.missed" = "未接";
+"call.blocked" = "已拦截";
+"call.unknown" = "未知";
+"Incoming" = "来电";
+"Outgoing" = "去电";
+"Missed" = "未接";
+"Blocked" = "已拦截";
+"Unknown" = "未知";
+"call" = "通话";
+"to" = "给";
+"from" = "来自";
+"Phone" = "电话";
+"Type" = "类型";
+"Duration" = "时长";
+"Service" = "服务";
+"Date" = "日期";
+"incoming call" = "来电";
+"outgoing call" = "去电";
+"missed call" = "未接";
+"blocked call" = "已拦截";
+"SMS with %@" = "短信来自 %@";
+"[Attachment]" = "[附件]";
+"[No text content]" = "[无文本内容]";
+
+/* Backup Results */
+"result.messages_backed_up" = "已备份 %d 条信息";
+"result.calls_backed_up" = "已备份 %d 条通话记录";
+"result.calendar_synced" = "已同步 %d 个日历事件";
+"result.nothing_new" = "没有新内容需要备份";
+"Nothing new to backup" = "没有新内容需要备份";
+"Backed up: " = "已备份: ";
+
+/* Backup Progress Messages */
+"Starting backup..." = "开始备份...";
+"Reading messages..." = "正在读取信息...";
+"Reading call history..." = "正在读取通话记录...";
+"Backup complete!" = "备份完成!";
+"Creating test data..." = "正在创建测试数据...";
+"Testing SMS backup..." = "正在测试短信备份...";
+"Testing call log backup..." = "正在测试通话记录备份...";
+"Testing Calendar sync..." = "正在测试日历同步...";
+"Test complete!" = "测试完成!";
+"Backing up %d messages..." = "正在备份 %d 条信息...";
+"Backing up messages: %d/%d" = "正在备份信息: %d/%d";
+"✅ Message %d/%d backed up" = "✅ 信息 %d/%d 已备份";
+"Backing up %d call records..." = "正在备份 %d 条通话记录...";
+"Backing up call records: %d/%d" = "正在备份通话记录: %d/%d";
+"✅ Call record %d/%d backed up" = "✅ 通话记录 %d/%d 已备份";
+"Syncing %d calls to Calendar..." = "正在同步 %d 条通话到日历...";
+"Syncing to calendar: %d/%d" = "正在同步到日历: %d/%d";
+"%d messages" = "%d 条信息";
+"%d call records" = "%d 条通话记录";
+"%d calendar events" = "%d 个日历事件";
+"Cancel" = "取消";
+"Backup cancelled" = "备份已取消";
+"Backup was cancelled" = "备份已被取消";
+
+/* Permission Request */
+"permission.title" = "需要完全磁盘访问权限";
+"permission.description" = "Mac Message Backup 需要访问信息和通话记录数据库才能进行备份。";
+"permission.step1" = "点击下方按钮打开系统设置";
+"permission.step2" = "点击 + 按钮添加应用";
+"permission.step3" = "选择 Mac Message Backup";
+"permission.step4" = "返回此应用并点击「检查权限」";
+"permission.open_settings" = "打开系统设置";
+"permission.check" = "检查权限";
+"permission.app_location" = "应用位置:";
+
+/* Settings Page - Gmail Tab */
+"Authentication Method" = "认证方式";
+"Method" = "认证方式";
+"OAuth 2.0" = "OAuth 2.0";
+"App Password" = "应用专用密码";
+"Google OAuth 2.0" = "Google OAuth 2.0";
+"Connected" = "已连接";
+"Sign Out" = "退出登录";
+"Client ID" = "客户端 ID";
+"Client Secret" = "客户端密钥";
+"Sign in with Google" = "使用 Google 登录";
+"How to get OAuth credentials" = "如何获取 OAuth 凭据";
+"1. Go to Google Cloud Console" = "1. 访问 Google Cloud Console";
+"2. Create a new project" = "2. 创建新项目";
+"3. Enable Gmail API and Calendar API" = "3. 启用 Gmail API 和 Calendar API";
+"4. Create OAuth 2.0 Client ID (Desktop app)" = "4. 创建 OAuth 2.0 客户端 ID (桌面应用)";
+"5. Copy Client ID and Secret here" = "5. 复制客户端 ID 和密钥到此处";
+"Backup Labels" = "备份标签";
+"SMS Label" = "短信标签";
+"Call Log Label" = "通话记录标签";
+"Save Settings" = "保存设置";
+"Gmail Account" = "Gmail 账号";
+"Email" = "邮箱";
+"Use a Gmail App Password, not your regular password." = "请使用 Gmail 应用专用密码，而非普通密码。";
+"How to create an App Password" = "如何创建应用专用密码";
+"Test Connection" = "测试连接";
+"Save" = "保存";
+
+/* Settings Page - Backup Tab */
+"Backup Messages to Gmail" = "备份 iMessage/短信到 Gmail";
+"Backup Call Log to Gmail" = "备份通话记录到 Gmail";
+"Calendar Backup" = "日历备份";
+"Backup Call Log to Calendar" = "备份通话记录到日历";
+"Enable Auto Backup" = "启用自动备份";
+"Backup Interval" = "备份间隔";
+"15 minutes" = "15 分钟";
+"30 minutes" = "30 分钟";
+"1 hour" = "1 小时";
+"2 hours" = "2 小时";
+"6 hours" = "6 小时";
+"12 hours" = "12 小时";
+"Daily" = "每天";
+
+/* Settings Page - Advanced Tab */
+"Reset Backup Progress" = "重置备份进度";
+"This will cause all data to be re-uploaded on next backup." = "这将导致下次备份重新上传所有数据。";
+"Reset Messages Progress" = "重置信息进度";
+"Reset Call Log Progress" = "重置通话记录进度";
+"Database Paths" = "数据库路径";
+"Messages Database" = "信息数据库";
+"Call History Database" = "通话记录数据库";
+"Export" = "导出";
+"Export backup data" = "导出备份数据";
+
+/* Settings Page - About Tab */
+"About" = "关于";
+"Version" = "版本";
+"Inspired by SMS Backup+ for Android" = "灵感来自 Android 版 SMS Backup+";
+"A lightweight backup solution for iMessage and Call History" = "轻量级 iMessage 和通话记录备份方案";
+"View on GitHub" = "在 GitHub 上查看";
+"Report an Issue" = "报告问题";
+
+/* New Settings Page */
+"Backup" = "备份";
+"Backup Options" = "备份选项";
+"Gmail Connected" = "Gmail 已连接";
+"Gmail Not Connected" = "Gmail 未连接";
+"Connection successful" = "连接成功";
+"Connection failed" = "连接失败";
+"✅ Settings saved" = "✅ 设置已保存";
+"Settings" = "设置";
+
+/* Startup Logs */
+"🚀 Starting permission checks..." = "🚀 开始权限检查...";
+"✅ Messages database: Connected" = "✅ 信息数据库：已连接";
+"⚠️ Messages database: No access - Need Full Disk Access permission" = "⚠️ 信息数据库：无访问权限 - 需要全盘访问权限";
+"✅ Call history database: Connected" = "✅ 通话记录数据库：已连接";
+"⚠️ Call history database: No access - Need Full Disk Access permission" = "⚠️ 通话记录数据库：无访问权限 - 需要全盘访问权限";
+"✅ Gmail account: " = "✅ Gmail 账户：";
+"ℹ️ Gmail password: Use Settings to verify connection" = "ℹ️ Gmail 密码：请在设置中验证连接（避免启动时读取密钥串）";
+"⚠️ Gmail account: Not configured" = "⚠️ Gmail 账户：未配置";
+"✅ Calendar access: Authorized" = "✅ 日历权限：已授权";
+"ℹ️ Calendar access: Not authorized (Enable in Settings if needed)" = "ℹ️ 日历权限：未授权（如需同步，请在设置中开启）";
+"✅ Startup checks completed" = "✅ 启动检查完成";
+"Select Calendar" = "选择日历";
+"Select a calendar" = "请选择一个日历";
+
+
+
+/* Status Messages and Alerts */
+"Please grant Full Disk Access" = "请授予完全磁盘访问权限";
+"Please configure Gmail first" = "请先配置 Gmail 账户";
+"✅ Messages Database Connected" = "✅ 信息数据库已连接";
+"✅ Call History Connected" = "✅ 通话记录已连接";
+"✅ Calendar Connected" = "✅ 日历已连接";
+"✅ Calendar Access Granted" = "✅ 日历访问已授权";
+
+/* Calendar Permission Sheet */
+"Calendar access granted. Please select a calendar to sync call logs to." = "已获取日历权限。请选择一个日历以同步通话记录。";
+"Access to your calendar is required to sync call history." = "同步通话记录需要访问您的日历权限。";
+"Grant Access" = "授予权限";
+"You will be prompted to allow access to your Calendar." = "系统将弹窗提示您允许访问日历。";
+"Please select a specific calendar." = "请选择一个具体的日历。";
+"Call logs will be synced to this calendar." = "通话记录将同步到此日历。";
+"Done" = "完成";
+
+/* Dynamic Status Messages */
+"Connecting..." = "正在连接...";
+"✅ Gmail connection verified" = "✅ Gmail 连接验证成功";
+"❌ Gmail connection check failed" = "❌ Gmail 连接检查失败";
+"Gmail check error: %@" = "Gmail 检查错误: %@";
+
+/* Operation Alerts */
+"Backup Complete" = "备份完成";
+"Backup Failed" = "备份失败";
+"Test Complete" = "测试完成";
+"Test backup executed successfully. Check the operation log for details." = "测试备份执行成功。请查看操作日志了解详情。";
+"Error: " = "错误: ";
+
