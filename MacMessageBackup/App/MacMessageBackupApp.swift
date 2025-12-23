@@ -150,32 +150,96 @@ class AppState: ObservableObject {
     // Time throttling for UI updates (to prevent excessive view rebuilds)
     private var lastProgressUpdate: Date = .distantPast
     
-    // Services
-    var messageService: MessageDatabaseService
-    var callService: CallHistoryService
+    // Services - lazy initialization to reduce memory
+    private var _messageService: MessageDatabaseService?
+    var messageService: MessageDatabaseService {
+        if _messageService == nil {
+            _messageService = MessageDatabaseService()
+        }
+        return _messageService!
+    }
+    
+    private var _callService: CallHistoryService?
+    var callService: CallHistoryService {
+        if _callService == nil {
+            _callService = CallHistoryService()
+        }
+        return _callService!
+    }
+    
     var imapService: IMAPService?
     var calendarService: GoogleCalendarService?
     var scheduler: BackupScheduler?
     
-    // Database status
-    @Published var messagesDbConnected = false
-    @Published var callHistoryDbConnected = false
-    @Published var gmailConnected = false
-    @Published var calendarConnected = false
+    // Connection status - consolidated into single struct to reduce @Published count
+    struct ConnectionStatus {
+        var messagesDb = false
+        var callHistoryDb = false
+        var gmail = false
+        var calendar = false
+    }
+    @Published var connectionStatus = ConnectionStatus()
     
-    // Statistics
-    @Published var totalMessages = 0
-    @Published var totalCallRecords = 0
-    @Published var backedUpMessages = 0  // Approximate based on lastRowId
-    @Published var backedUpCallRecords = 0
-    @Published var remainingMessages = 0
-    @Published var remainingCallRecords = 0
+    // Convenience accessors for backward compatibility
+    var messagesDbConnected: Bool {
+        get { connectionStatus.messagesDb }
+        set { connectionStatus.messagesDb = newValue }
+    }
+    var callHistoryDbConnected: Bool {
+        get { connectionStatus.callHistoryDb }
+        set { connectionStatus.callHistoryDb = newValue }
+    }
+    var gmailConnected: Bool {
+        get { connectionStatus.gmail }
+        set { connectionStatus.gmail = newValue }
+    }
+    var calendarConnected: Bool {
+        get { connectionStatus.calendar }
+        set { connectionStatus.calendar = newValue }
+    }
     
-    // App visibility
-    @Published var showMenuBarExtra: Bool = true  // Control menu bar icon visibility
-    @Published var mainWindowVisible: Bool = true  // Track if main window is visible
+    // Statistics - consolidated into single struct
+    struct BackupStatistics {
+        var totalMessages = 0
+        var totalCallRecords = 0
+        var backedUpMessages = 0
+        var backedUpCallRecords = 0
+        var remainingMessages = 0
+        var remainingCallRecords = 0
+    }
+    @Published var stats = BackupStatistics()
     
-    // Log entries for display
+    // Convenience accessors for backward compatibility
+    var totalMessages: Int {
+        get { stats.totalMessages }
+        set { stats.totalMessages = newValue }
+    }
+    var totalCallRecords: Int {
+        get { stats.totalCallRecords }
+        set { stats.totalCallRecords = newValue }
+    }
+    var backedUpMessages: Int {
+        get { stats.backedUpMessages }
+        set { stats.backedUpMessages = newValue }
+    }
+    var backedUpCallRecords: Int {
+        get { stats.backedUpCallRecords }
+        set { stats.backedUpCallRecords = newValue }
+    }
+    var remainingMessages: Int {
+        get { stats.remainingMessages }
+        set { stats.remainingMessages = newValue }
+    }
+    var remainingCallRecords: Int {
+        get { stats.remainingCallRecords }
+        set { stats.remainingCallRecords = newValue }
+    }
+    
+    // App visibility - use @AppStorage instead of @Published to reduce overhead
+    @Published var showMenuBarExtra: Bool = true
+    var mainWindowVisible: Bool = true  // Non-published, rarely used
+    
+    // Log entries for display - limit to 30 to reduce memory
     @Published var logEntries: [LogEntry] = []
     
     /// Represents a log entry
@@ -212,8 +276,8 @@ class AppState: ObservableObject {
     func addLog(_ message: String, type: LogEntry.LogType = .info) {
         DispatchQueue.main.async {
             self.logEntries.append(LogEntry(timestamp: Date(), message: message, type: type))
-            // Keep only last 50 entries
-            if self.logEntries.count > 50 {
+            // Keep only last 30 entries to reduce memory
+            if self.logEntries.count > 30 {
                 self.logEntries.removeFirst()
             }
         }
@@ -249,12 +313,10 @@ class AppState: ObservableObject {
     
     init() {
         self.config = BackupConfig.load()
-        self.messageService = MessageDatabaseService()
-        self.callService = CallHistoryService()
+        // Services are now lazily initialized when first accessed
         
         // Initial state is disconnected - connection happens in initializeServices()
-        messagesDbConnected = false
-        callHistoryDbConnected = false
+        connectionStatus = ConnectionStatus()
         
         // Sync app visibility state from config
         // Use underscore prefix to set underlying storage directly, avoiding @Published notification during init
