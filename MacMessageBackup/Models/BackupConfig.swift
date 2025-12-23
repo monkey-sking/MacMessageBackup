@@ -95,6 +95,7 @@ struct BackupConfig: Codable {
     // App appearance settings
     var hideDockIcon: Bool = false  // Hide app from Dock
     var showMenuBarIcon: Bool = true  // Show menu bar icon
+    var launchAtLogin: Bool = false   // Auto-start when user logs in
     
     // File paths
     static let configPath = FileManager.default.homeDirectoryForCurrentUser

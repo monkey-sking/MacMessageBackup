@@ -50,6 +50,8 @@ struct MacMessageBackupApp: App {
     }
 }
 
+import ServiceManagement
+
 /// App delegate for single instance check and window management
 class AppDelegate: NSObject, NSApplicationDelegate {
     static var shared: AppDelegate?
@@ -95,6 +97,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     func showMainWindow() {
+        // First, temporarily show in Dock if completely hidden (so window can be created)
+        let config = BackupConfig.load()
+        let wasCompletelyHidden = config.hideDockIcon && !config.showMenuBarIcon
+        
+        if wasCompletelyHidden {
+            // Temporarily become regular app to allow window creation
+            NSApp.setActivationPolicy(.regular)
+        }
+        
         // Activate app and show window
         NSApp.activate(ignoringOtherApps: true)
         
@@ -107,6 +118,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         } else if let window = NSApp.windows.first {
             window.makeKeyAndOrderFront(nil)
             window.orderFrontRegardless()
+        }
+        
+        // If was completely hidden, go back to hidden after a short delay
+        // This keeps Dock visible while window is open
+        if wasCompletelyHidden {
+            // Keep Dock visible while window is open - will hide when window closes
         }
     }
     
@@ -135,6 +152,31 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 NSApp.activate(ignoringOtherApps: true)
             }
         }
+    }
+    
+    // MARK: - Login Item Management (macOS 13+)
+    
+    /// Set whether app should launch at login
+    static func setLaunchAtLogin(_ enabled: Bool) {
+        if #available(macOS 13.0, *) {
+            do {
+                if enabled {
+                    try SMAppService.mainApp.register()
+                } else {
+                    try SMAppService.mainApp.unregister()
+                }
+            } catch {
+                print("Failed to update login item: \(error)")
+            }
+        }
+    }
+    
+    /// Check if app is set to launch at login
+    static var isLaunchAtLoginEnabled: Bool {
+        if #available(macOS 13.0, *) {
+            return SMAppService.mainApp.status == .enabled
+        }
+        return false
     }
 }
 

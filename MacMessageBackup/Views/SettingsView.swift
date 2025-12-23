@@ -493,42 +493,73 @@ struct SettingsView: View {
             // 外观设置
             SettingsSection(title: String(localized: "Appearance")) {
                 VStack(alignment: .leading, spacing: 12) {
+                    // 开机自动启动
+                    SettingsToggle(
+                        title: String(localized: "Launch at Login"),
+                        description: String(localized: "Start automatically when you log in"),
+                        isOn: Binding(
+                            get: { AppDelegate.isLaunchAtLoginEnabled },
+                            set: { newValue in
+                                AppDelegate.setLaunchAtLogin(newValue)
+                                // Also update config for reference (actual state is managed by SMAppService)
+                                appState.config.launchAtLogin = newValue
+                                appState.saveConfig()
+                            }
+                        )
+                    )
+                    
                     SettingsToggle(
                         title: String(localized: "Hide Dock Icon"),
-                        description: String(localized: "Run in background with menu bar icon only"),
+                        description: String(localized: "Run in background without Dock icon"),
                         isOn: Binding(
                             get: { appState.config.hideDockIcon },
                             set: { newValue in
                                 appState.config.hideDockIcon = newValue
                                 appState.saveConfig()
                                 AppDelegate.shared?.updateDockVisibility(hidden: newValue)
+                                
+                                // Show warning if both are now hidden
+                                if newValue && !appState.config.showMenuBarIcon {
+                                    appState.addLog(String(localized: "⚠️ Hidden mode enabled. Double-click app icon to show window."), type: .warning)
+                                }
                             }
                         )
                     )
                     
                     SettingsToggle(
                         title: String(localized: "Show Menu Bar Icon"),
-                        description: String(localized: "Display icon in menu bar for quick access"),
+                        description: appState.config.hideDockIcon && !appState.config.showMenuBarIcon 
+                            ? String(localized: "Hidden mode: Double-click app icon to show window")
+                            : String(localized: "Display icon in menu bar for quick access"),
                         isOn: Binding(
                             get: { appState.config.showMenuBarIcon },
                             set: { newValue in
-                                // Safety check: don't hide menu bar if Dock is also hidden
-                                if !newValue && appState.config.hideDockIcon {
-                                    // Show warning and prevent hiding
-                                    appState.activeAlert = AppState.AlertItem(
-                                        title: String(localized: "Cannot Hide Menu Bar"),
-                                        message: String(localized: "Menu bar icon cannot be hidden when Dock icon is also hidden. This would make the app inaccessible."),
-                                        type: .error
-                                    )
-                                    return
-                                }
                                 appState.config.showMenuBarIcon = newValue
                                 // Update @AppStorage via UserDefaults to sync with App's MenuBarExtra binding
                                 UserDefaults.standard.set(newValue, forKey: "showMenuBarIcon")
                                 appState.saveConfig()
+                                
+                                // Show warning if both are now hidden
+                                if !newValue && appState.config.hideDockIcon {
+                                    appState.addLog(String(localized: "⚠️ Hidden mode enabled. Double-click app icon to show window."), type: .warning)
+                                }
                             }
                         )
                     )
+                    
+                    // Show hint when in hidden mode
+                    if appState.config.hideDockIcon && !appState.config.showMenuBarIcon {
+                        HStack(spacing: 6) {
+                            Image(systemName: "info.circle.fill")
+                                .foregroundStyle(.orange)
+                            Text(String(localized: "Hidden mode is active. Double-click the app icon to show this window."))
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        .padding(8)
+                        .background(Color.orange.opacity(0.1))
+                        .cornerRadius(6)
+                    }
                 }
             }
             
