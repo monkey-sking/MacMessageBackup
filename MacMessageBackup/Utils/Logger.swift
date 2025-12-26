@@ -39,7 +39,8 @@ class Logger {
     }
     
     private func writeToFile(_ level: String, _ message: String) {
-        let dateFormatter = ISO8601DateFormatter()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
         let timestamp = dateFormatter.string(from: Date())
         let logLine = "[\(timestamp)] [\(level)] \(message)\n"
         

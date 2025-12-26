@@ -14,10 +14,28 @@ class LocalCalendarService: ObservableObject {
     @Published var error: String?
     
     private init() {
+        // Listen for calendar store changes (permission changes, calendar additions/removals)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(eventStoreChanged),
+            name: .EKEventStoreChanged,
+            object: eventStore
+        )
+        
         // Delay check to avoid potential blocking during singleton initialization
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
             self?.checkAuthorizationStatus()
         }
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    /// Called when calendar store changes (permissions, calendars added/removed, etc.)
+    @objc private func eventStoreChanged(_ notification: Notification) {
+        Logger.shared.info("Calendar store changed - refreshing status")
+        checkAuthorizationStatus()
     }
     
     // MARK: - Authorization
@@ -25,6 +43,7 @@ class LocalCalendarService: ObservableObject {
     /// Check current authorization status
     func checkAuthorizationStatus() {
         let status = EKEventStore.authorizationStatus(for: .event)
+        let previouslyAuthorized = isAuthorized
         
         DispatchQueue.main.async {
             switch status {
@@ -41,6 +60,15 @@ class LocalCalendarService: ObservableObject {
                 self.loadCalendars()
             @unknown default:
                 self.isAuthorized = false
+            }
+            
+            // Log permission status changes
+            if previouslyAuthorized != self.isAuthorized {
+                if self.isAuthorized {
+                    Logger.shared.info("Calendar permission granted")
+                } else {
+                    Logger.shared.warning("Calendar permission lost or denied (status: \(status.rawValue))")
+                }
             }
         }
     }

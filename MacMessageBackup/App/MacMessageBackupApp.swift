@@ -17,6 +17,7 @@ struct MacMessageBackupApp: App {
                 .environmentObject(appState)
                 .onReceive(NotificationCenter.default.publisher(for: NSApplication.willTerminateNotification)) { _ in
                     // App is about to terminate
+                    Logger.shared.info("App terminating...")
                 }
         }
         .windowStyle(.hiddenTitleBar)
@@ -58,6 +59,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     func applicationDidFinishLaunching(_ notification: Notification) {
         AppDelegate.shared = self
+        Logger.shared.info("App launched")
         
         // Check if another instance is already running
         let runningApps = NSWorkspace.shared.runningApplications
@@ -699,10 +701,26 @@ class AppState: ObservableObject {
     
     /// Refresh Calendar connection status
     func refreshCalendarStatus() {
+        // Proactively refresh the authorization status from system
+        LocalCalendarService.shared.checkAuthorizationStatus()
+        
         // Connected only if authorized AND a calendar is selected
         let authorized = LocalCalendarService.shared.isAuthorized
         let calendarSelected = !config.calendarId.isEmpty
-        calendarConnected = authorized && calendarSelected
+        let newStatus = authorized && calendarSelected
+        
+        // Log if status changed
+        if newStatus != calendarConnected {
+            if newStatus {
+                addLog(String(localized: "✅ Calendar connection restored"), type: .success)
+            } else if !authorized {
+                addLog(String(localized: "⚠️ Calendar permission lost"), type: .warning)
+            } else {
+                addLog(String(localized: "ℹ️ No calendar selected"), type: .info)
+            }
+        }
+        
+        calendarConnected = newStatus
     }
 
     /// Start test backup with mock data
