@@ -331,7 +331,7 @@ struct ContentView: View {
                                                 VStack(alignment: .leading, spacing: 2) {
                                                     Text(entry.message)
                                                         .font(.caption)
-                                                    Text(entry.timestamp.formatted(date: .omitted, time: .shortened))
+                                                    Text(entry.timestamp.formatted(date: .abbreviated, time: .shortened))
                                                         .font(.caption2)
                                                         .foregroundStyle(.secondary)
                                                 }
