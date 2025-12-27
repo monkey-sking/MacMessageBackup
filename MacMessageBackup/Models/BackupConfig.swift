@@ -76,6 +76,7 @@ struct BackupConfig: Codable {
     var backupCallLog: Bool = true
     var autoBackupEnabled: Bool = false
     var autoBackupIntervalMinutes: Int = 60
+    var markBackupAsRead: Bool = true  // Mark backed up messages as read in Gmail
     
     // Progress tracking
     var lastMessageBackupDate: Date?

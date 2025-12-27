@@ -390,3 +390,6 @@
 "Auto backup completed: " = "自动备份完成: ";
 "Auto backup failed: " = "自动备份失败: ";
 
+/* Mark as Read */
+"Mark backup as read" = "将备份标记为已读";
+"Mark backed up messages as read in Gmail" = "在 Gmail 中将备份的邮件标记为已读";

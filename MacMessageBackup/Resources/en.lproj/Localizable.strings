@@ -142,3 +142,7 @@
 "Cancel" = "Cancel";
 "Backup cancelled" = "Backup cancelled";
 "Backup was cancelled" = "Backup was cancelled";
+
+/* Mark as Read */
+"Mark backup as read" = "Mark backup as read";
+"Mark backed up messages as read in Gmail" = "Mark backed up messages as read in Gmail";

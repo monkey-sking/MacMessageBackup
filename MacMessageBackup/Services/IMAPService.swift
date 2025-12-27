@@ -668,7 +668,7 @@ class IMAPService {
         try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: path.path)
     }
     /// Create Python Batch IMAP script
-    private func createBatchIMAPScript(at path: URL) throws {
+    private func createBatchIMAPScript(at path: URL, markAsRead: Bool) throws {
         let script = """
         #!/usr/bin/env python3
         import sys
@@ -678,14 +678,15 @@ class IMAPService {
         import os
         
         def main():
-            # Expected args: email, password, mailbox
-            if len(sys.argv) < 4:
-                print("Usage: imap_batch.py <email> <password> <mailbox>")
+            # Expected args: email, password, mailbox, mark_as_read
+            if len(sys.argv) < 5:
+                print("Usage: imap_batch.py <email> <password> <mailbox> <mark_as_read>")
                 sys.exit(1)
             
             email = sys.argv[1]
             password = sys.argv[2]
             mailbox = sys.argv[3]
+            mark_as_read = sys.argv[4].lower() == 'true'
             
             # Flush stdout immediately
             sys.stdout.reconfigure(line_buffering=True)
@@ -703,6 +704,9 @@ class IMAPService {
                     imap.select(quoted_mailbox)
                     
                 print("READY")
+                
+                # Determine flags based on mark_as_read setting
+                flags = '\\\\Seen' if mark_as_read else None
                 
                 # Read lines from stdin: file_path|timestamp|id
                 for line in sys.stdin:
@@ -727,7 +731,7 @@ class IMAPService {
                             content = f.read()
                         
                         timestamp = int(timestamp_str)
-                        result = imap.append(quoted_mailbox, None, imaplib.Time2Internaldate(timestamp), content.encode('utf-8'))
+                        result = imap.append(quoted_mailbox, flags, imaplib.Time2Internaldate(timestamp), content.encode('utf-8'))
                         
                         if result[0] == 'OK':
                             print(f"SUCCESS:{id_str}")
@@ -776,11 +780,11 @@ class IMAPService {
         let scriptPath = FileManager.default.homeDirectoryForCurrentUser
             .appendingPathComponent(".config/MacMessageBackup/imap_batch.py")
         
-        try createBatchIMAPScript(at: scriptPath)
+        try createBatchIMAPScript(at: scriptPath, markAsRead: config.markBackupAsRead)
         
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/usr/bin/python3")
-        process.arguments = [scriptPath.path, config.email, password.replacingOccurrences(of: " ", with: ""), mailbox]
+        process.arguments = [scriptPath.path, config.email, password.replacingOccurrences(of: " ", with: ""), mailbox, config.markBackupAsRead ? "true" : "false"]
         
         let inputPipe = Pipe()
         let outputPipe = Pipe()

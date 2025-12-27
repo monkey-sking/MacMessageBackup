@@ -191,7 +191,7 @@ class MessageDatabaseService {
                     let textData = Data(bytes[textStart..<textEnd])
                     if let text = String(data: textData, encoding: .utf8) {
                         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
-                        if trimmed.count > 5 && !trimmed.hasPrefix("NS") && !trimmed.hasPrefix("bplist") {
+                        if trimmed.count > 5 && !trimmed.hasPrefix("NS") && !trimmed.hasPrefix("bplist") && !trimmed.hasPrefix("__k") {
                             extractedTexts.append(trimmed)
                         }
                     }
@@ -214,13 +214,13 @@ class MessageDatabaseService {
             if byte >= 0x20 && byte < 0x7F {
                 currentAscii.append(Character(UnicodeScalar(byte)))
             } else {
-                if currentAscii.count > longestAscii.count && !currentAscii.hasPrefix("NS") && !currentAscii.hasPrefix("bplist") {
+                if currentAscii.count > longestAscii.count && !currentAscii.hasPrefix("NS") && !currentAscii.hasPrefix("bplist") && !currentAscii.hasPrefix("__k") {
                     longestAscii = currentAscii
                 }
                 currentAscii = ""
             }
         }
-        if currentAscii.count > longestAscii.count && !currentAscii.hasPrefix("NS") {
+        if currentAscii.count > longestAscii.count && !currentAscii.hasPrefix("NS") && !currentAscii.hasPrefix("__k") {
             longestAscii = currentAscii
         }
         

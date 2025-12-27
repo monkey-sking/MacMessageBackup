@@ -214,6 +214,18 @@ struct SettingsView: View {
                             }
                         )
                     )
+                    
+                    SettingsToggle(
+                        title: String(localized: "Mark backup as read"),
+                        description: String(localized: "Mark backed up messages as read in Gmail"),
+                        isOn: Binding(
+                            get: { appState.config.markBackupAsRead },
+                            set: { 
+                                appState.config.markBackupAsRead = $0 
+                                appState.saveConfig()
+                            }
+                        )
+                    )
                 }
             }
             
