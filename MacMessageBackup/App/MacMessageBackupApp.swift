@@ -318,7 +318,22 @@ class AppState: ObservableObject {
     
     /// Add a log entry
     func addLog(_ message: String, type: LogEntry.LogType = .info) {
+        // Log to persistent file
+        switch type {
+        case .info: Logger.shared.info(message)
+        case .success: Logger.shared.info("✅ \(message)")
+        case .error: Logger.shared.error(message)
+        case .warning: Logger.shared.warning(message)
+        }
+        
         DispatchQueue.main.async {
+            // Deduplicate: Don't add if exactly same as last message within 60 seconds
+            if let last = self.logEntries.last, 
+               last.message == message, 
+               Date().timeIntervalSince(last.timestamp) < 60 {
+                return
+            }
+            
             self.logEntries.append(LogEntry(timestamp: Date(), message: message, type: type))
             // Keep only last 30 entries to reduce memory
             if self.logEntries.count > 30 {
@@ -386,8 +401,12 @@ class AppState: ObservableObject {
                 self.backupProgress = message
                 self.backupProgressValue = progress
                 
-                // Log messages that don't contain progress counters
-                if !message.contains("/") {
+                // Only log significant milestones to the persistent UI log
+                // Skip "Reading...", "Syncing...", and progress counters "1/10"
+                let skipKeywords = ["/", String(localized: "Reading"), String(localized: "Syncing")]
+                let shouldLog = !skipKeywords.contains { message.contains($0) }
+                
+                if shouldLog {
                     self.addLog(message, type: message.contains("failed") || message.contains("error") ? .error : .info)
                 }
             }

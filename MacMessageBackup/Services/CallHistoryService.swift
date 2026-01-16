@@ -31,19 +31,17 @@ class CallHistoryService {
             let path = Self.databasePath.path
             
             guard FileManager.default.fileExists(atPath: path) else {
-                print("⚠️ Call History database not found at: \(path)")
-                print("💡 Make sure Full Disk Access is granted and you have call history")
+                Logger.shared.warning("⚠️ Call History database not found at: \(path). Make sure Full Disk Access is granted.")
                 return
             }
             
             // Enable SQLite multi-thread mode for this connection
             let result = sqlite3_open_v2(path, &db, SQLITE_OPEN_READONLY | SQLITE_OPEN_FULLMUTEX, nil)
             if result == SQLITE_OK {
-                print("✅ Connected to Call History database")
+                Logger.shared.info("✅ Connected to Call History database")
             } else {
                 let errorMsg = String(cString: sqlite3_errmsg(db))
-                print("❌ Failed to connect to Call History database: \(errorMsg)")
-                print("💡 Make sure Full Disk Access is granted in System Settings > Privacy & Security")
+                Logger.shared.error("❌ Failed to connect to Call History database: \(errorMsg). Check Full Disk Access.")
                 db = nil
             }
         }

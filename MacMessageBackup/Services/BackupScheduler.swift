@@ -47,14 +47,14 @@ class BackupScheduler {
             }
         }
         
-        print("✅ Auto backup started (every \(config.autoBackupIntervalMinutes) minutes)")
+        Logger.shared.info("✅ Auto backup started (every \(config.autoBackupIntervalMinutes) minutes)")
     }
     
     /// Stop automatic backup
     func stopAutoBackup() {
         timer?.invalidate()
         timer = nil
-        print("⏹ Auto backup stopped")
+        Logger.shared.info("⏹ Auto backup stopped")
     }
     
     /// Cancel ongoing backup
@@ -66,6 +66,7 @@ class BackupScheduler {
     @MainActor
     func performBackup(isAutoBackup: Bool = false) async {
         isCancelled = false  // Reset cancel flag
+        Logger.shared.info("Starting backup... (isAutoBackup: \(isAutoBackup))")
         onProgress?(0.0, String(localized: "Starting backup..."))
         
         var result = BackupResult()
@@ -180,9 +181,9 @@ class BackupScheduler {
                                 config.lastCalendarSyncRowId = lastRecord.id
                             }
                             
-                            print("✅ Synced \(syncedCount) call events to Calendar")
+                            Logger.shared.info("✅ Synced \(syncedCount) call events to Calendar")
                         } catch {
-                            print("⚠️ Calendar sync failed: \(error.localizedDescription)")
+                            Logger.shared.warning("⚠️ Calendar sync failed: \(error.localizedDescription)")
                             // Don't fail the whole backup if calendar sync fails
                         }
                     }
@@ -199,11 +200,13 @@ class BackupScheduler {
                 return
             }
             
+            Logger.shared.info("Backup complete! \(result.summary)")
             onProgress?(1.0, String(localized: "Backup complete!"))
             onComplete?(.success(result), isAutoBackup)
             
         } catch {
             let failedMsg = String(localized: "Backup failed: \(error.localizedDescription)")
+            Logger.shared.error(failedMsg)
             onProgress?(0.0, failedMsg)
             onComplete?(.failure(error), isAutoBackup)
         }
@@ -259,9 +262,9 @@ class BackupScheduler {
             do {
                 try await imapService.backupMessages([testMessage]) { _, _, _ in }
                 result.messagesBackedUp = 1
-                print("✅ Test SMS saved to Gmail")
+                Logger.shared.info("✅ Test SMS saved to Gmail")
             } catch {
-                print("❌ SMS test failed: \(error)")
+                Logger.shared.error("❌ SMS test failed: \(error)")
             }
         }
         
@@ -271,9 +274,9 @@ class BackupScheduler {
             do {
                 try await imapService.backupCallRecords([testCallRecord]) { _, _, _ in }
                 result.callRecordsBackedUp = 1
-                print("✅ Test call record saved to Gmail")
+                Logger.shared.info("✅ Test call record saved to Gmail")
             } catch {
-                print("❌ Gmail test failed: \(error)")
+                Logger.shared.error("❌ Gmail test failed: \(error)")
             }
         }
         
@@ -283,9 +286,9 @@ class BackupScheduler {
             do {
                 try localCalendarService.createCallEvent(testCallRecord)
                 result.calendarEventsSynced = 1
-                print("✅ Test calendar event created")
+                Logger.shared.info("✅ Test calendar event created")
             } catch {
-                print("❌ Calendar test failed: \(error)")
+                Logger.shared.error("❌ Calendar test failed: \(error)")
             }
         }
         
@@ -316,7 +319,7 @@ struct BackupResult {
         }
         
         if parts.isEmpty {
-            return String(localized: "Nothing new to backup")
+            return String(localized: "No new messages or call records found")
         }
         
         return String(localized: "Backed up: ") + parts.joined(separator: ", ")

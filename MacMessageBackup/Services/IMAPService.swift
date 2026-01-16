@@ -138,7 +138,7 @@ class IMAPService {
         
         var batchItems: [(path: String, date: Date, id: Int64)] = []
         
-        print("Prepare batch files for \(messages.count) messages...")
+        Logger.shared.info("Prepare batch files for \(messages.count) messages...")
         
         // Phase 1: Create all .eml files locally
         for message in messages {
@@ -158,7 +158,7 @@ class IMAPService {
             batchItems.append((path: emlPath.path, date: message.date, id: message.id))
         }
         
-        print("Starting batch upload worker...")
+        Logger.shared.info("Starting batch upload worker...")
         
         // Phase 2: Run batch worker
         // Note: For very large sets, we might want to slice this, but Int.max means "all".
@@ -171,7 +171,7 @@ class IMAPService {
         // Cleanup temp dir
         try? FileManager.default.removeItem(at: emlDir)
         
-        print("✅ Backed up messages batch complete")
+        Logger.shared.info("✅ Backed up messages batch complete")
     }
     
     /// Backup call records
@@ -192,7 +192,7 @@ class IMAPService {
         
         var batchItems: [(path: String, date: Date, id: Int64)] = []
         
-        print("Prepare batch files for \(records.count) call records...")
+        Logger.shared.info("Prepare batch files for \(records.count) call records...")
         
         for record in records {
             let filename = "call_\(record.id)_\(Int(record.date.timeIntervalSince1970)).json"
@@ -209,13 +209,13 @@ class IMAPService {
             batchItems.append((path: emlPath.path, date: record.date, id: record.id))
         }
         
-        print("Starting batch upload worker for calls...")
+        Logger.shared.info("Starting batch upload worker for calls...")
         
         try await runBatchWorker(items: batchItems, mailbox: config.callLogLabel, progressHandler: progressHandler)
         
         try? FileManager.default.removeItem(at: emlDir)
         
-        print("✅ Backed up call records batch complete")
+        Logger.shared.info("✅ Backed up call records batch complete")
     }
     
     /// Append message to Gmail using IMAP APPEND (like SMS Backup+)
@@ -307,7 +307,7 @@ class IMAPService {
             throw IMAPError.sendFailed(output)
         }
         
-        print("✅ Email appended via IMAP successfully")
+        Logger.shared.info("✅ Email appended via IMAP successfully")
     }
     
     /// Create Python IMAP APPEND script with auto-create label support
@@ -399,7 +399,7 @@ class IMAPService {
                 return tokens.accessToken
             }
         } catch {
-            print("Failed to load OAuth tokens: \(error)")
+            Logger.shared.error("Failed to load OAuth tokens: \(error)")
         }
         return nil
     }
@@ -436,10 +436,10 @@ class IMAPService {
         }
         
         if httpResponse.statusCode == 200 || httpResponse.statusCode == 201 {
-            print("✅ Email sent to Gmail successfully")
+            Logger.shared.info("✅ Email sent to Gmail successfully")
         } else {
             let errorBody = String(data: data, encoding: .utf8) ?? "Unknown error"
-            print("❌ Gmail API error: \(httpResponse.statusCode) - \(errorBody)")
+            Logger.shared.error("❌ Gmail API error: \(httpResponse.statusCode) - \(errorBody)")
             throw IMAPError.sendFailed("Status \(httpResponse.statusCode): \(errorBody)")
         }
     }
@@ -610,10 +610,10 @@ class IMAPService {
         let output = String(data: data, encoding: .utf8) ?? ""
         
         if process.terminationStatus == 0 {
-            print("✅ Gmail connection test passed")
+            Logger.shared.info("✅ Gmail connection test passed")
             return true
         } else {
-            print("❌ Gmail connection test failed: \(output)")
+            Logger.shared.warning("❌ Gmail connection test failed: \(output)")
             return false
         }
     }
