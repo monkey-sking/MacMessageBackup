@@ -99,16 +99,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     func showMainWindow() {
-        // First, temporarily show in Dock if completely hidden (so window can be created)
-        let config = BackupConfig.load()
-        let wasCompletelyHidden = config.hideDockIcon && !config.showMenuBarIcon
-        
-        if wasCompletelyHidden {
-            // Temporarily become regular app to allow window creation
-            NSApp.setActivationPolicy(.regular)
-        }
-        
         // Activate app and show window
+        // Note: Window can be shown even in .accessory mode (no Dock icon)
         NSApp.activate(ignoringOtherApps: true)
         
         // Try to find the main window (not menu bar extra)
@@ -120,12 +112,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         } else if let window = NSApp.windows.first {
             window.makeKeyAndOrderFront(nil)
             window.orderFrontRegardless()
-        }
-        
-        // If was completely hidden, go back to hidden after a short delay
-        // This keeps Dock visible while window is open
-        if wasCompletelyHidden {
-            // Keep Dock visible while window is open - will hide when window closes
         }
     }
     
