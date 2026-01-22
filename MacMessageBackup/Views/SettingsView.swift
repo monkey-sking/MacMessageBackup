@@ -24,7 +24,7 @@ struct SettingsView: View {
         VStack(spacing: 0) {
             // 顶部标签栏
             HStack(spacing: 0) {
-                TabButton(title: "Gmail", icon: "envelope.fill", isSelected: selectedTab == 0) {
+                TabButton(title: String(localized: "Gmail"), icon: "envelope.fill", isSelected: selectedTab == 0) {
                     selectedTab = 0
                 }
                 TabButton(title: String(localized: "Backup"), icon: "arrow.clockwise.circle.fill", isSelected: selectedTab == 1) {
@@ -84,7 +84,7 @@ struct SettingsView: View {
                 VStack(alignment: .leading, spacing: 12) {
                     SettingsTextField(
                         title: String(localized: "Email"),
-                        placeholder: "example@gmail.com",
+                        placeholder: String(localized: "example@gmail.com"),
                         text: $email
                     )
                     
@@ -109,7 +109,7 @@ struct SettingsView: View {
                 VStack(alignment: .leading, spacing: 12) {
                     SettingsTextField(
                         title: String(localized: "SMS Label"),
-                        placeholder: "SMS",
+                        placeholder: String(localized: "SMS"),
                         text: Binding(
                             get: { appState.config.smsLabel },
                             set: { appState.config.smsLabel = $0 }
@@ -118,7 +118,7 @@ struct SettingsView: View {
                     
                     SettingsTextField(
                         title: String(localized: "Call Log Label"),
-                        placeholder: "Call log",
+                        placeholder: String(localized: "Call log"),
                         text: Binding(
                             get: { appState.config.callLogLabel },
                             set: { appState.config.callLogLabel = $0 }
@@ -408,7 +408,7 @@ struct SettingsView: View {
                         
                         VStack(alignment: .leading, spacing: 4) {
                             HStack(alignment: .top) {
-                                Text("收到短信:")
+                                Text(String(localized: "SMS Subject:"))
                                     .font(.caption2)
                                     .foregroundStyle(.secondary)
                                     .frame(width: 70, alignment: .trailing)
@@ -417,7 +417,7 @@ struct SettingsView: View {
                                     .foregroundStyle(.primary)
                             }
                             HStack(alignment: .top) {
-                                Text("发送短信:")
+                                Text(String(localized: "SMS Subject To:"))
                                     .font(.caption2)
                                     .foregroundStyle(.secondary)
                                     .frame(width: 70, alignment: .trailing)
@@ -589,7 +589,7 @@ struct SettingsView: View {
                     .font(.system(size: 64))
                     .foregroundStyle(.blue.gradient)
                 
-                Text("Mac Message Backup")
+                Text(String(localized: "Mac Message Backup"))
                     .font(.title)
                     .fontWeight(.bold)
                 
@@ -598,7 +598,7 @@ struct SettingsView: View {
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                 
-                Text(String(localized: "Version") + " 1.0.0")
+                Text(String(format: String(localized: "Version: %@"), "1.0.0"))
                     .font(.caption2)
                     .foregroundStyle(.secondary)
             }

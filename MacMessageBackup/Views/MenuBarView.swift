@@ -27,18 +27,18 @@ struct MenuBarView: View {
                     Circle()
                         .fill(appState.messagesDbConnected ? .green : .red)
                         .frame(width: 8, height: 8)
-                    Text(String(localized: "Messages") + ": \(appState.totalMessages)")
+                    Text(String(format: String(localized: "Messages: %d"), appState.totalMessages))
                 }
                 
                 HStack {
                     Circle()
                         .fill(appState.callHistoryDbConnected ? .green : .red)
                         .frame(width: 8, height: 8)
-                    Text(String(localized: "Call Records") + ": \(appState.totalCallRecords)")
+                    Text(String(format: String(localized: "Call Records: %d"), appState.totalCallRecords))
                 }
                 
                 if let lastDate = appState.config.lastMessageBackupDate {
-                    Text(String(localized: "Last backup:") + " \(lastDate.formatted(.relative(presentation: .named)))")
+                    Text(String(format: String(localized: "Last backup: %@"), lastDate.formatted(.relative(presentation: .named))))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }

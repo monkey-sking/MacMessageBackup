@@ -89,10 +89,16 @@
 
 /* Appearance Settings */
 "Appearance" = "外观";
+"Launch at Login" = "开机自启动";
+"Start automatically when you log in" = "在您登录系统时自动启动应用";
 "Hide Dock Icon" = "隐藏 Dock 图标";
-"Run in background with menu bar icon only" = "仅在菜单栏运行，不显示 Dock 图标";
+"Run in background without Dock icon" = "在后台运行，不显示 Dock 图标";
 "Show Menu Bar Icon" = "显示菜单栏图标";
 "Display icon in menu bar for quick access" = "在菜单栏显示图标，方便快速访问";
+"Hidden mode: Double-click app icon to show window" = "隐藏模式：双击应用图标即可显示窗口";
+"Hidden mode is active. Double-click the app icon to show this window." = "隐藏模式已激活。双击应用图标即可显示窗口。";
+"⚠️ Hidden mode enabled. Double-click app icon to show window." = "⚠️ 隐藏模式已启用。双击应用图标即可显示窗口。";
+"incoming call" = "来电";
 "Cannot Hide Menu Bar" = "无法隐藏菜单栏";
 "Menu bar icon cannot be hidden when Dock icon is also hidden. This would make the app inaccessible." = "当 Dock 图标也被隐藏时，无法隐藏菜单栏图标，否则将无法访问应用。";
 "Show Window" = "显示主窗口";
@@ -393,3 +399,14 @@
 /* Mark as Read */
 "Mark backup as read" = "将备份标记为已读";
 "Mark backed up messages as read in Gmail" = "在 Gmail 中将备份的邮件标记为已读";
+
+/* Additional UI Keys */
+"Gmail" = "Gmail";
+"example@gmail.com" = "example@gmail.com";
+"SMS" = "短信";
+"Call log" = "通话记录";
+"Version: %@" = "版本: %@";
+
+/* Direction (used in backup subjects) */
+"Sent to" = "发给";
+"Received from" = "来自";

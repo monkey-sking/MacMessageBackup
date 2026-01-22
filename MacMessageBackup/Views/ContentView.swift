@@ -40,7 +40,7 @@ struct ContentView: View {
                 Alert(
                     title: Text(alertItem.title),
                     message: Text(alertItem.message),
-                    dismissButton: .default(Text("OK"))
+                    dismissButton: .default(Text(String(localized: "OK")))
                 )
             }
     }
@@ -208,11 +208,11 @@ struct ContentView: View {
                         .font(.system(size: 64))
                         .foregroundStyle(.blue.gradient)
                     
-                    Text("Mac Message Backup")
+                    Text(String(localized: "Mac Message Backup"))
                         .font(.largeTitle)
                         .fontWeight(.bold)
                     
-                    Text("Backup iMessage & Call History to Gmail")
+                    Text(String(localized: "Backup iMessage & Call History to Gmail"))
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
@@ -344,7 +344,7 @@ struct ContentView: View {
                                 .background(Color(.textBackgroundColor).opacity(0.5))
                                 .cornerRadius(6)
                                 
-                                Button("Clear Log") {
+                                Button(String(localized: "Clear Log")) {
                                     appState.clearLogs()
                                 }
                                 .font(.caption)

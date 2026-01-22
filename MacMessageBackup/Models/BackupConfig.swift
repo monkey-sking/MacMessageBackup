@@ -178,7 +178,7 @@ struct BackupConfig: Codable {
         // Direction text based on isFromMe
         let direction: String
         if formatPreset == .chinese || (useCustomFormat && smsSubjectFormat.contains("{direction}")) {
-            direction = isFromMe ? "发给" : "来自"
+            direction = isFromMe ? String(localized: "Sent to") : String(localized: "Received from")
         } else {
             direction = isFromMe ? "to" : "from"
         }

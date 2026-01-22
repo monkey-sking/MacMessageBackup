@@ -16,12 +16,12 @@ struct PermissionRequestView: View {
                 .foregroundStyle(.orange.gradient)
             
             // Title
-            Text("permission.title".localized)
+            Text(String(localized: "permission.title"))
                 .font(.title)
                 .fontWeight(.bold)
             
             // Description
-            Text("permission.description".localized)
+            Text(String(localized: "permission.description"))
                 .font(.body)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -29,10 +29,10 @@ struct PermissionRequestView: View {
             
             // Steps
             VStack(alignment: .leading, spacing: 12) {
-                StepRow(number: 1, text: "permission.step1".localized)
-                StepRow(number: 2, text: "permission.step2".localized)
-                StepRow(number: 3, text: "permission.step3".localized)
-                StepRow(number: 4, text: "permission.step4".localized)
+                StepRow(number: 1, text: String(localized: "permission.step1"))
+                StepRow(number: 2, text: String(localized: "permission.step2"))
+                StepRow(number: 3, text: String(localized: "permission.step3"))
+                StepRow(number: 4, text: String(localized: "permission.step4"))
             }
             .padding(.vertical, 16)
             .padding(.horizontal, 32)
@@ -46,7 +46,7 @@ struct PermissionRequestView: View {
                 }) {
                     HStack {
                         Image(systemName: "gear")
-                        Text("permission.open_settings".localized)
+                        Text(String(localized: "permission.open_settings"))
                     }
                     .frame(minWidth: 150)
                 }
@@ -63,7 +63,7 @@ struct PermissionRequestView: View {
                         } else {
                             Image(systemName: "arrow.clockwise")
                         }
-                        Text("permission.check".localized)
+                        Text(String(localized: "permission.check"))
                     }
                     .frame(minWidth: 120)
                 }
@@ -87,7 +87,7 @@ struct PermissionRequestView: View {
             // Hint
             if let bundleURL = permissionHelper.getAppBundleURL() {
                 VStack(spacing: 4) {
-                    Text("permission.app_location".localized)
+                    Text(String(localized: "permission.app_location"))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                     

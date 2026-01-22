@@ -146,3 +146,41 @@
 /* Mark as Read */
 "Mark backup as read" = "Mark backup as read";
 "Mark backed up messages as read in Gmail" = "Mark backed up messages as read in Gmail";
+
+/* Header & Status */
+"Mac Message Backup" = "Mac Message Backup";
+"Backup iMessage & Call History to Gmail" = "Backup iMessage & Call History to Gmail";
+"OK" = "OK";
+"Clear Log" = "Clear Log";
+
+/* Menu Bar Specific */
+"Messages: %d" = "Messages: %d";
+"Call Records: %d" = "Call Records: %d";
+"Last backup: %@" = "Last backup: %@";
+
+/* Settings Preview */
+"SMS Subject:" = "SMS Subject:";
+"SMS Subject To:" = "SMS Subject To:";
+
+/* Additional UI Keys */
+"Gmail" = "Gmail";
+"example@gmail.com" = "example@gmail.com";
+"SMS" = "SMS";
+"Call log" = "Call log";
+"Version: %@" = "Version: %@";
+
+"Appearance" = "Appearance";
+"Launch at Login" = "Launch at Login";
+"Start automatically when you log in" = "Start automatically when you log in";
+"Hide Dock Icon" = "Hide Dock Icon";
+"Run in background without Dock icon" = "Run in background without Dock icon";
+"Show Menu Bar Icon" = "Show Menu Bar Icon";
+"Display icon in menu bar for quick access" = "Display icon in menu bar for quick access";
+"Hidden mode: Double-click app icon to show window" = "Hidden mode: Double-click app icon to show window";
+"Hidden mode is active. Double-click the app icon to show this window." = "Hidden mode is active. Double-click the app icon to show this window.";
+"⚠️ Hidden mode enabled. Double-click app icon to show window." = "⚠️ Hidden mode enabled. Double-click app icon to show window.";
+"incoming call" = "incoming call";
+
+/* Direction (used in backup subjects) */
+"Sent to" = "Sent to";
+"Received from" = "Received from";
