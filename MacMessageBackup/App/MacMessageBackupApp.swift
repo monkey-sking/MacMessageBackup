@@ -61,6 +61,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         AppDelegate.shared = self
         Logger.shared.info("App launched")
         
+        // Apply Dock visibility setting immediately on launch
+        // This avoids the race condition where AppState tries to update it before AppDelegate is ready
+        let config = BackupConfig.load()
+        if config.hideDockIcon {
+            updateDockVisibility(hidden: true)
+        }
+
         // Check if another instance is already running
         let runningApps = NSWorkspace.shared.runningApplications
         let myBundleId = Bundle.main.bundleIdentifier ?? "com.example.MacMessageBackup"
@@ -366,13 +373,6 @@ class AppState: ObservableObject {
         // Sync app visibility state from config
         // Use underscore prefix to set underlying storage directly, avoiding @Published notification during init
         _showMenuBarExtra = Published(initialValue: config.showMenuBarIcon)
-        
-        // Apply Dock visibility setting on launch
-        if config.hideDockIcon {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                AppDelegate.shared?.updateDockVisibility(hidden: true)
-            }
-        }
         
         // Initialize services
         if !config.email.isEmpty {
