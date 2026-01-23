@@ -3,3 +3,5 @@ build/
 *.xcuserstate
 DerivedData/
 *.xcworkspacedata
+scripts/config.sh
+scripts/ExportOptions.plist
