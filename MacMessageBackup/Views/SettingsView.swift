@@ -1,7 +1,7 @@
 import SwiftUI
 
 /// 重新设计的设置视图 - 简洁清晰，完全中文化
-/// 重新设计的设置视图 - 简洁清晰，完全中文化
+/// Uses native macOS components (TabView, Form) for a polished look.
 struct SettingsView: View {
     @EnvironmentObject var appState: AppState
     @Environment(\.dismiss) var dismiss
@@ -12,57 +12,41 @@ struct SettingsView: View {
     @State private var password = ""
     @State private var testingConnection = false
     @State private var connectionResult: String?
-    @State private var selectedTab: Int
-    let targetTab: Int
+    @State private var selectedTab: Int = 0
     
+    // Initial tab can be passed in, but we use @State for the TabView selection
     init(initialTab: Int = 0) {
-        self.targetTab = initialTab
         _selectedTab = State(initialValue: initialTab)
     }
     
     var body: some View {
-        VStack(spacing: 0) {
-            // 顶部标签栏
-            HStack(spacing: 0) {
-                TabButton(title: String(localized: "Gmail"), icon: "envelope.fill", isSelected: selectedTab == 0) {
-                    selectedTab = 0
+        TabView(selection: $selectedTab) {
+            gmailSettingsTab
+                .tabItem {
+                    Label(String(localized: "Gmail"), systemImage: "envelope.fill")
                 }
-                TabButton(title: String(localized: "Backup"), icon: "arrow.clockwise.circle.fill", isSelected: selectedTab == 1) {
-                    selectedTab = 1
-                }
-                TabButton(title: String(localized: "About"), icon: "info.circle.fill", isSelected: selectedTab == 2) {
-                    selectedTab = 2
-                }
-            }
-            .padding(.horizontal)
-            .padding(.top, 16)
+                .tag(0)
             
-            Divider()
-                .padding(.top, 12)
-            
-            // 内容区域
-            ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    switch selectedTab {
-                    case 0:
-                        gmailSettingsContent
-                    case 1:
-                        backupSettingsContent
-                    case 2:
-                        aboutContent
-                    default:
-                        EmptyView()
-                    }
+            backupSettingsTab
+                .tabItem {
+                    Label(String(localized: "Backup"), systemImage: "arrow.clockwise.circle.fill")
                 }
-                .padding(24)
-            }
+                .tag(1)
+            
+            advancedSettingsTab
+                .tabItem {
+                    Label(String(localized: "Advanced"), systemImage: "gearshape.fill")
+                }
+                .tag(2) // Moved appearance/format here
+                
+            aboutTab
+                .tabItem {
+                    Label(String(localized: "About"), systemImage: "info.circle.fill")
+                }
+                .tag(3)
         }
-        .frame(width: 550, height: 580)
-        .onAppear {
-            email = appState.config.email
-            // Do NOT pre-fill password to avoid Keychain prompt
-            // Password field will be empty initially for security and to prevent prompts
-        }
+        .frame(width: 500, height: 550) // Standard macOS settings size
+        .padding()
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
                 Button(String(localized: "Done")) {
@@ -70,563 +54,379 @@ struct SettingsView: View {
                 }
             }
         }
+        .onAppear {
+            email = appState.config.email
+            // Do NOT pre-fill password to avoid Keychain prompt loops
+        }
     }
     
-    // MARK: - Gmail 设置
+    // MARK: - Tabs
     
-    var gmailSettingsContent: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            // 连接状态卡片
-            connectionStatusCard
-            
-            // Gmail 账号设置
-            SettingsSection(title: String(localized: "Gmail Account")) {
-                VStack(alignment: .leading, spacing: 12) {
-                    SettingsTextField(
-                        title: String(localized: "Email"),
-                        placeholder: String(localized: "example@gmail.com"),
-                        text: $email
-                    )
-                    
-                    SettingsSecureField(
-                        title: String(localized: "App Password"),
-                        placeholder: "xxxx xxxx xxxx xxxx",
-                        text: $password
-                    )
-                    
-                    Text(String(localized: "Use a Gmail App Password, not your regular password."))
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                    
-                    Link(String(localized: "How to create an App Password"),
-                         destination: URL(string: "https://support.google.com/accounts/answer/185833")!)
-                        .font(.caption)
-                }
-            }
-            
-            // 备份标签设置
-            SettingsSection(title: String(localized: "Backup Labels")) {
-                VStack(alignment: .leading, spacing: 12) {
-                    SettingsTextField(
-                        title: String(localized: "SMS Label"),
-                        placeholder: String(localized: "SMS"),
-                        text: Binding(
-                            get: { appState.config.smsLabel },
-                            set: { appState.config.smsLabel = $0 }
-                        )
-                    )
-                    
-                    SettingsTextField(
-                        title: String(localized: "Call Log Label"),
-                        placeholder: String(localized: "Call log"),
-                        text: Binding(
-                            get: { appState.config.callLogLabel },
-                            set: { appState.config.callLogLabel = $0 }
-                        )
-                    )
-                }
-            }
-            
-            // 操作按钮
-            HStack {
-                Button(action: testConnection) {
-                    HStack {
-                        if testingConnection {
-                            ProgressView()
-                                .controlSize(.small)
-                        } else {
-                            Image(systemName: "network")
-                        }
-                        Text(String(localized: "Test Connection"))
-                    }
-                }
-                .disabled(email.isEmpty || password.isEmpty || testingConnection)
-                
-                Spacer()
-                
-                Button(String(localized: "Save")) {
-                    saveSettings()
-                }
-                .buttonStyle(.borderedProminent)
-                .disabled(email.isEmpty)
-            }
-            
-            if let result = connectionResult {
+    var gmailSettingsTab: some View {
+        Form {
+            Section {
                 HStack {
-                    Image(systemName: result.contains("✅") ? "checkmark.circle.fill" : "xmark.circle.fill")
-                        .foregroundStyle(result.contains("✅") ? .green : .red)
-                    Text(result)
-                        .font(.caption)
-                }
-            }
-        }
-    }
-    
-    var connectionStatusCard: some View {
-        HStack {
-            Image(systemName: appState.gmailConnected ? "checkmark.circle.fill" : "exclamationmark.circle.fill")
-                .font(.title2)
-                .foregroundStyle(appState.gmailConnected ? .green : .orange)
-            
-            VStack(alignment: .leading) {
-                Text(appState.gmailConnected ? String(localized: "Gmail Connected") : String(localized: "Gmail Not Connected"))
-                    .font(.headline)
-                
-                if appState.gmailConnected, !email.isEmpty {
-                    Text(email)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-            }
-            
-            Spacer()
-        }
-        .padding()
-        .background(Color(.controlBackgroundColor))
-        .cornerRadius(10)
-    }
-    
-    // MARK: - 备份设置
-    
-    var backupSettingsContent: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            // 备份内容
-            SettingsSection(title: String(localized: "Backup Options")) {
-                VStack(alignment: .leading, spacing: 6) {
-                    SettingsToggle(
-                        title: String(localized: "Backup Messages to Gmail"),
-                        isOn: Binding(
-                            get: { appState.config.backupMessages },
-                            set: { 
-                                appState.config.backupMessages = $0
-                                appState.saveConfig()
-                            }
-                        )
-                    )
-                    
-                    SettingsToggle(
-                        title: String(localized: "Backup Call Log to Gmail"),
-                        isOn: Binding(
-                            get: { appState.config.backupCallLog },
-                            set: { 
-                                appState.config.backupCallLog = $0 
-                                appState.saveConfig()
-                            }
-                        )
-                    )
-                    
-                    SettingsToggle(
-                        title: String(localized: "Mark backup as read"),
-                        description: String(localized: "Mark backed up messages as read in Gmail"),
-                        isOn: Binding(
-                            get: { appState.config.markBackupAsRead },
-                            set: { 
-                                appState.config.markBackupAsRead = $0 
-                                appState.saveConfig()
-                            }
-                        )
-                    )
-                }
-            }
-            
-            // 日历同步
-            SettingsSection(title: String(localized: "Calendar Backup")) {
-                VStack(alignment: .leading, spacing: 12) {
-                    SettingsToggle(
-                        title: String(localized: "Backup Call Log to Calendar"),
-                        isOn: Binding(
-                            get: { appState.config.calendarSyncEnabled },
-                            set: { 
-                                appState.config.calendarSyncEnabled = $0 
-                                appState.saveConfig()
-                            }
-                        )
-                    )
-                    
-                    if appState.config.calendarSyncEnabled {
-                        if !localCalendarService.isAuthorized {
-                            HStack {
-                                Spacer()
-                                Button(String(localized: "Connect Calendar")) {
-                                    Task {
-                                        _ = await localCalendarService.requestAccess()
-                                    }
-                                }
-                                .buttonStyle(.bordered)
-                            }
-                        } else {
-                            // Calendar Picker
-                            HStack {
-                                Text(String(localized: "Select Calendar"))
+                    if appState.gmailConnected {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundStyle(.green)
+                            .font(.title2)
+                        VStack(alignment: .leading) {
+                            Text(String(localized: "Gmail Connected"))
+                                .font(.headline)
+                            if !email.isEmpty {
+                                Text(email)
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
-                                Spacer()
-                                Picker("", selection: Binding(
-                                    get: { appState.config.calendarId },
-                                    set: { 
-                                        appState.config.calendarId = $0 
-                                        appState.saveConfig()
-                                    }
-                                )) {
-                                    Text(String(localized: "Select a calendar")).tag("primary")
-                                    ForEach(localCalendarService.availableCalendars, id: \.calendarIdentifier) { calendar in
-                                        Text(calendar.title).tag(calendar.calendarIdentifier)
-                                    }
-                                }
-                                .labelsHidden()
-                                .pickerStyle(.menu)
-                                .frame(width: 200)
                             }
                         }
+                    } else {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .foregroundStyle(.orange)
+                            .font(.title2)
+                        VStack(alignment: .leading) {
+                            Text(String(localized: "Gmail Not Connected"))
+                                .font(.headline)
+                            Text(String(localized: "Please enter your credentials below."))
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
+                .padding(.vertical, 8)
+            }
+            
+            Section(String(localized: "Account Info")) {
+                TextField(String(localized: "Email"), text: $email)
+                    .textFieldStyle(.roundedBorder)
+                    .textContentType(.emailAddress)
+                
+                SecureField(String(localized: "App Password"), text: $password)
+                    .textFieldStyle(.roundedBorder)
+                    .textContentType(.password)
+                
+                Text(String(localized: "Use a Gmail App Password, not your regular password."))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                
+                Link(String(localized: "How to create an App Password"),
+                     destination: URL(string: "https://support.google.com/accounts/answer/185833")!)
+                    .font(.caption)
+            }
+            
+            Section(String(localized: "Backup Labels")) {
+                TextField(String(localized: "SMS Label"), text: Binding(
+                    get: { appState.config.smsLabel },
+                    set: { appState.config.smsLabel = $0 }
+                ))
+                
+                TextField(String(localized: "Call Log Label"), text: Binding(
+                    get: { appState.config.callLogLabel },
+                    set: { appState.config.callLogLabel = $0 }
+                ))
+            }
+            
+            Section {
+                HStack {
+                    Button(action: testConnection) {
+                        HStack {
+                            if testingConnection {
+                                ProgressView().controlSize(.small)
+                            } else {
+                                Image(systemName: "network")
+                            }
+                            Text(String(localized: "Test Connection"))
+                        }
+                    }
+                    .disabled(email.isEmpty || password.isEmpty || testingConnection)
+                    
+                    Spacer()
+                    
+                    Button(String(localized: "Save Settings")) {
+                        saveSettings()
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .disabled(email.isEmpty)
+                }
+                
+                if let result = connectionResult {
+                    HStack {
+                        Image(systemName: result.contains("✅") ? "checkmark.circle.fill" : "xmark.circle.fill")
+                            .foregroundStyle(result.contains("✅") ? .green : .red)
+                        Text(result)
+                            .font(.body)
+                    }
+                    .padding(.top, 4)
+                }
+            }
+        }
+        .formStyle(.grouped)
+    }
+    
+    var backupSettingsTab: some View {
+        Form {
+            Section(String(localized: "Backup Options")) {
+                Toggle(String(localized: "Backup Messages to Gmail"), isOn: Binding(
+                    get: { appState.config.backupMessages },
+                    set: {
+                        appState.config.backupMessages = $0
+                        appState.saveConfig()
+                    }
+                ))
+                
+                Toggle(String(localized: "Backup Call Log to Gmail"), isOn: Binding(
+                    get: { appState.config.backupCallLog },
+                    set: {
+                        appState.config.backupCallLog = $0
+                        appState.saveConfig()
+                    }
+                ))
+                
+                Toggle(isOn: Binding(
+                    get: { appState.config.markBackupAsRead },
+                    set: {
+                        appState.config.markBackupAsRead = $0
+                        appState.saveConfig()
+                    }
+                )) {
+                    VStack(alignment: .leading) {
+                        Text(String(localized: "Mark backup as read"))
+                        Text(String(localized: "Mark backed up messages as read in Gmail"))
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
                     }
                 }
             }
             
-            // 邮件格式设置
-            SettingsSection(title: String(localized: "Email Format")) {
-                VStack(alignment: .leading, spacing: 12) {
-                    // Preset selector
-                    HStack {
-                        Text(String(localized: "Format Preset"))
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                        Spacer()
-                        Picker("", selection: Binding(
-                            get: { appState.config.formatPreset },
-                            set: { 
-                                appState.config.formatPreset = $0 
+            Section(String(localized: "Calendar Backup")) {
+                Toggle(String(localized: "Backup Call Log to Calendar"), isOn: Binding(
+                    get: { appState.config.calendarSyncEnabled },
+                    set: {
+                        appState.config.calendarSyncEnabled = $0
+                        appState.saveConfig()
+                    }
+                ))
+                
+                if appState.config.calendarSyncEnabled {
+                    if !localCalendarService.isAuthorized {
+                        HStack {
+                            Text(String(localized: "Permission required"))
+                                .foregroundStyle(.secondary)
+                            Spacer()
+                            Button(String(localized: "Connect Calendar")) {
+                                Task {
+                                    _ = await localCalendarService.requestAccess()
+                                }
+                            }
+                        }
+                    } else {
+                        Picker(String(localized: "Select Calendar"), selection: Binding(
+                            get: { appState.config.calendarId },
+                            set: {
+                                appState.config.calendarId = $0
                                 appState.saveConfig()
                             }
                         )) {
-                            ForEach(FormatPreset.allCases, id: \.self) { preset in
-                                Text(preset.displayName).tag(preset)
+                            Text(String(localized: "Select a calendar")).tag("primary")
+                            ForEach(localCalendarService.availableCalendars, id: \.calendarIdentifier) { calendar in
+                                Text(calendar.title).tag(calendar.calendarIdentifier)
                             }
                         }
-                        .labelsHidden()
-                        .pickerStyle(.menu)
-                        .frame(width: 180)
-                        .disabled(appState.config.useCustomFormat)
                     }
-                    
-                    // Custom format toggle
-                    SettingsToggle(
-                        title: String(localized: "Use Custom Format"),
-                        isOn: Binding(
-                            get: { appState.config.useCustomFormat },
-                            set: { 
-                                appState.config.useCustomFormat = $0 
-                                appState.saveConfig()
-                            }
-                        )
-                    )
-                    
-                    // Custom format fields (shown when custom is enabled)
-                    if appState.config.useCustomFormat {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text(String(localized: "Available placeholders: {contact}, {type}, {date}, {duration}, {emoji}"))
-                                .font(.caption2)
-                                .foregroundStyle(.secondary)
-                            
-                            HStack {
-                                Text(String(localized: "SMS Subject"))
-                                    .font(.caption)
-                                    .frame(width: 80, alignment: .leading)
-                                TextField("", text: Binding(
-                                    get: { appState.config.smsSubjectFormat },
-                                    set: { 
-                                        appState.config.smsSubjectFormat = $0 
-                                        appState.saveConfig()
-                                    }
-                                ))
-                                .textFieldStyle(.roundedBorder)
-                                .font(.system(.caption, design: .monospaced))
-                            }
-                            
-                            HStack {
-                                Text(String(localized: "Call Subject"))
-                                    .font(.caption)
-                                    .frame(width: 80, alignment: .leading)
-                                TextField("", text: Binding(
-                                    get: { appState.config.callSubjectFormat },
-                                    set: { 
-                                        appState.config.callSubjectFormat = $0 
-                                        appState.saveConfig()
-                                    }
-                                ))
-                                .textFieldStyle(.roundedBorder)
-                                .font(.system(.caption, design: .monospaced))
-                            }
-                            
-                            HStack {
-                                Text(String(localized: "Calendar Title"))
-                                    .font(.caption)
-                                    .frame(width: 80, alignment: .leading)
-                                TextField("", text: Binding(
-                                    get: { appState.config.calendarTitleFormat },
-                                    set: { 
-                                        appState.config.calendarTitleFormat = $0 
-                                        appState.saveConfig()
-                                    }
-                                ))
-                                .textFieldStyle(.roundedBorder)
-                                .font(.system(.caption, design: .monospaced))
-                            }
-                            
-                            HStack {
-                                Text(String(localized: "Call Body"))
-                                    .font(.caption)
-                                    .frame(width: 80, alignment: .leading)
-                                TextField("", text: Binding(
-                                    get: { appState.config.callBodyFormat },
-                                    set: { 
-                                        appState.config.callBodyFormat = $0 
-                                        appState.saveConfig()
-                                    }
-                                ))
-                                .textFieldStyle(.roundedBorder)
-                                .font(.system(.caption, design: .monospaced))
-                            }
+                }
+            }
+            
+            Section(String(localized: "Auto Backup")) {
+                Toggle(String(localized: "Enable Auto Backup"), isOn: Binding(
+                    get: { appState.config.autoBackupEnabled },
+                    set: {
+                        appState.config.autoBackupEnabled = $0
+                        appState.saveConfig()
+                        if $0 {
+                            appState.scheduler?.startAutoBackup()
+                        } else {
+                            appState.scheduler?.stopAutoBackup()
                         }
-                        .padding(.top, 4)
                     }
-                    
-                    // Preview
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(String(localized: "Preview"))
+                ))
+                
+                if appState.config.autoBackupEnabled {
+                    Picker(String(localized: "Backup Interval"), selection: Binding(
+                        get: { appState.config.autoBackupIntervalMinutes },
+                        set: {
+                            appState.config.autoBackupIntervalMinutes = $0
+                            appState.saveConfig()
+                            appState.scheduler?.startAutoBackup()
+                        }
+                    )) {
+                        Text(String(localized: "15 minutes")).tag(15)
+                        Text(String(localized: "30 minutes")).tag(30)
+                        Text(String(localized: "1 hour")).tag(60)
+                        Text(String(localized: "2 hours")).tag(120)
+                        Text(String(localized: "6 hours")).tag(360)
+                        Text(String(localized: "Daily")).tag(1440)
+                    }
+                }
+            }
+        }
+        .formStyle(.grouped)
+    }
+    
+    var advancedSettingsTab: some View {
+        Form {
+            Section(String(localized: "Email Format")) {
+                Picker(String(localized: "Format Preset"), selection: Binding(
+                    get: { appState.config.formatPreset },
+                    set: {
+                        appState.config.formatPreset = $0
+                        appState.saveConfig()
+                    }
+                )) {
+                    ForEach(FormatPreset.allCases, id: \.self) { preset in
+                        Text(preset.displayName).tag(preset)
+                    }
+                }
+                .disabled(appState.config.useCustomFormat)
+                
+                Toggle(String(localized: "Use Custom Format"), isOn: Binding(
+                    get: { appState.config.useCustomFormat },
+                    set: {
+                        appState.config.useCustomFormat = $0
+                        appState.saveConfig()
+                    }
+                ))
+                
+                if appState.config.useCustomFormat {
+                    Group {
+                        Text(String(localized: "Common placeholders: {contact}, {date}, {body}"))
                             .font(.caption)
                             .foregroundStyle(.secondary)
                         
-                        let sampleContact = "+8613800138000"
-                        let sampleType = String(localized: "incoming call")
-                        let sampleDuration = 90
-                        let sampleDurationFormatted = "00:01:30"
+                        TextField(String(localized: "SMS Subject"), text: Binding(
+                            get: { appState.config.smsSubjectFormat },
+                            set: { appState.config.smsSubjectFormat = $0; appState.saveConfig() }
+                        ))
                         
-                        let smsSubjectPreviewFrom = appState.config.formatSmsSubject(contact: sampleContact, date: Date(), isFromMe: false)
-                        let smsSubjectPreviewTo = appState.config.formatSmsSubject(contact: sampleContact, date: Date(), isFromMe: true)
-                        let callSubjectPreview = appState.config.formatCallSubject(contact: sampleContact, type: sampleType, duration: sampleDurationFormatted, date: Date())
-                        let callBodyPreview = appState.config.formatCallBody(contact: sampleContact, type: sampleType, duration: sampleDuration, durationFormatted: sampleDurationFormatted, date: Date())
+                        TextField(String(localized: "Call Subject"), text: Binding(
+                            get: { appState.config.callSubjectFormat },
+                            set: { appState.config.callSubjectFormat = $0; appState.saveConfig() }
+                        ))
                         
-                        VStack(alignment: .leading, spacing: 4) {
-                            HStack(alignment: .top) {
-                                Text(String(localized: "SMS Subject:"))
-                                    .font(.caption2)
-                                    .foregroundStyle(.secondary)
-                                    .frame(width: 70, alignment: .trailing)
-                                Text(smsSubjectPreviewFrom)
-                                    .font(.caption2)
-                                    .foregroundStyle(.primary)
-                            }
-                            HStack(alignment: .top) {
-                                Text(String(localized: "SMS Subject To:"))
-                                    .font(.caption2)
-                                    .foregroundStyle(.secondary)
-                                    .frame(width: 70, alignment: .trailing)
-                                Text(smsSubjectPreviewTo)
-                                    .font(.caption2)
-                                    .foregroundStyle(.primary)
-                            }
-                            HStack(alignment: .top) {
-                                Text(String(localized: "Call Subject:"))
-                                    .font(.caption2)
-                                    .foregroundStyle(.secondary)
-                                    .frame(width: 70, alignment: .trailing)
-                                Text(callSubjectPreview)
-                                    .font(.caption2)
-                                    .foregroundStyle(.primary)
-                            }
-                            HStack(alignment: .top) {
-                                Text(String(localized: "Call Body:"))
-                                    .font(.caption2)
-                                    .foregroundStyle(.secondary)
-                                    .frame(width: 70, alignment: .trailing)
-                                Text(callBodyPreview)
-                                    .font(.caption2)
-                                    .foregroundStyle(.primary)
-                            }
-                        }
-                        .padding(8)
-                        .background(Color.primary.opacity(0.05))
-                        .cornerRadius(6)
+                        TextField(String(localized: "Calendar Title"), text: Binding(
+                            get: { appState.config.calendarTitleFormat },
+                            set: { appState.config.calendarTitleFormat = $0; appState.saveConfig() }
+                        ))
                     }
+                    .fontDesign(.monospaced)
                 }
             }
             
-            // 自动备份
-            SettingsSection(title: String(localized: "Auto Backup")) {
-                VStack(alignment: .leading, spacing: 12) {
-                    SettingsToggle(
-                        title: String(localized: "Enable Auto Backup"),
-                        isOn: Binding(
-                            get: { appState.config.autoBackupEnabled },
-                            set: { 
-                                appState.config.autoBackupEnabled = $0 
-                                appState.saveConfig()
-                                if $0 {
-                                    appState.scheduler?.startAutoBackup()
-                                } else {
-                                    appState.scheduler?.stopAutoBackup()
-                                }
-                            }
-                        )
-                    )
-                    
-                    if appState.config.autoBackupEnabled {
-                        HStack {
-                            Text(String(localized: "Backup Interval"))
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                            
-                            Spacer()
-                            
-                            Picker("", selection: Binding(
-                                get: { appState.config.autoBackupIntervalMinutes },
-                                set: { 
-                                    appState.config.autoBackupIntervalMinutes = $0
-                                    appState.saveConfig()
-                                    // Restart scheduler with new interval
-                                    appState.scheduler?.startAutoBackup() 
-                                }
-                            )) {
-                                Text(String(localized: "15 minutes")).tag(15)
-                                Text(String(localized: "30 minutes")).tag(30)
-                                Text(String(localized: "1 hour")).tag(60)
-                                Text(String(localized: "2 hours")).tag(120)
-                                Text(String(localized: "6 hours")).tag(360)
-                                Text(String(localized: "Daily")).tag(1440)
-                            }
-                            .labelsHidden()
-                            .pickerStyle(.menu)
-                            .frame(width: 120)
+            Section(String(localized: "Appearance")) {
+                Toggle(isOn: Binding(
+                    get: { AppDelegate.isLaunchAtLoginEnabled },
+                    set: { newValue in
+                        AppDelegate.setLaunchAtLogin(newValue)
+                        appState.config.launchAtLogin = newValue
+                        appState.saveConfig()
+                    }
+                )) {
+                    VStack(alignment: .leading) {
+                        Text(String(localized: "Launch at Login"))
+                        Text(String(localized: "Start automatically when you log in"))
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                
+                Toggle(isOn: Binding(
+                    get: { appState.config.hideDockIcon },
+                    set: { newValue in
+                        appState.config.hideDockIcon = newValue
+                        appState.saveConfig()
+                        AppDelegate.shared?.updateDockVisibility(hidden: newValue)
+                        
+                        if newValue && !appState.config.showMenuBarIcon {
+                            appState.addLog(String(localized: "⚠️ Hidden mode enabled."), type: .warning)
                         }
+                    }
+                )) {
+                    VStack(alignment: .leading) {
+                        Text(String(localized: "Hide Dock Icon"))
+                        Text(String(localized: "Run in background without Dock icon"))
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                
+                Toggle(isOn: Binding(
+                    get: { appState.config.showMenuBarIcon },
+                    set: { newValue in
+                        appState.config.showMenuBarIcon = newValue
+                        UserDefaults.standard.set(newValue, forKey: "showMenuBarIcon")
+                        appState.saveConfig()
+                        
+                        if !newValue && appState.config.hideDockIcon {
+                            appState.addLog(String(localized: "⚠️ Hidden mode enabled."), type: .warning)
+                        }
+                    }
+                )) {
+                    VStack(alignment: .leading) {
+                        Text(String(localized: "Show Menu Bar Icon"))
+                        Text(appState.config.hideDockIcon && !appState.config.showMenuBarIcon
+                             ? String(localized: "Hidden mode: Double-click app icon to show window")
+                             : String(localized: "Display icon in menu bar for quick access"))
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
                     }
                 }
             }
-            
-            // 外观设置
-            SettingsSection(title: String(localized: "Appearance")) {
-                VStack(alignment: .leading, spacing: 12) {
-                    // 开机自动启动
-                    SettingsToggle(
-                        title: String(localized: "Launch at Login"),
-                        description: String(localized: "Start automatically when you log in"),
-                        isOn: Binding(
-                            get: { AppDelegate.isLaunchAtLoginEnabled },
-                            set: { newValue in
-                                AppDelegate.setLaunchAtLogin(newValue)
-                                // Also update config for reference (actual state is managed by SMAppService)
-                                appState.config.launchAtLogin = newValue
-                                appState.saveConfig()
-                            }
-                        )
-                    )
-                    
-                    SettingsToggle(
-                        title: String(localized: "Hide Dock Icon"),
-                        description: String(localized: "Run in background without Dock icon"),
-                        isOn: Binding(
-                            get: { appState.config.hideDockIcon },
-                            set: { newValue in
-                                appState.config.hideDockIcon = newValue
-                                appState.saveConfig()
-                                AppDelegate.shared?.updateDockVisibility(hidden: newValue)
-                                
-                                // Show warning if both are now hidden
-                                if newValue && !appState.config.showMenuBarIcon {
-                                    appState.addLog(String(localized: "⚠️ Hidden mode enabled. Double-click app icon to show window."), type: .warning)
-                                }
-                            }
-                        )
-                    )
-                    
-                    SettingsToggle(
-                        title: String(localized: "Show Menu Bar Icon"),
-                        description: appState.config.hideDockIcon && !appState.config.showMenuBarIcon 
-                            ? String(localized: "Hidden mode: Double-click app icon to show window")
-                            : String(localized: "Display icon in menu bar for quick access"),
-                        isOn: Binding(
-                            get: { appState.config.showMenuBarIcon },
-                            set: { newValue in
-                                appState.config.showMenuBarIcon = newValue
-                                // Update @AppStorage via UserDefaults to sync with App's MenuBarExtra binding
-                                UserDefaults.standard.set(newValue, forKey: "showMenuBarIcon")
-                                appState.saveConfig()
-                                
-                                // Show warning if both are now hidden
-                                if !newValue && appState.config.hideDockIcon {
-                                    appState.addLog(String(localized: "⚠️ Hidden mode enabled. Double-click app icon to show window."), type: .warning)
-                                }
-                            }
-                        )
-                    )
-                    
-                    // Show hint when in hidden mode
-                    if appState.config.hideDockIcon && !appState.config.showMenuBarIcon {
-                        HStack(spacing: 6) {
-                            Image(systemName: "info.circle.fill")
-                                .foregroundStyle(.orange)
-                            Text(String(localized: "Hidden mode is active. Double-click the app icon to show this window."))
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                        .padding(8)
-                        .background(Color.orange.opacity(0.1))
-                        .cornerRadius(6)
-                    }
-                }
-            }
-            
-            Spacer()
         }
+        .formStyle(.grouped)
     }
     
-    // MARK: - 关于
-    
-    var aboutContent: some View {
-        VStack(spacing: 24) {
-            // App 图标和名称
-            VStack(spacing: 12) {
-                Image(systemName: "message.badge.circle.fill")
-                    .font(.system(size: 64))
-                    .foregroundStyle(.blue.gradient)
-                
+    var aboutTab: some View {
+        VStack(spacing: 20) {
+            Image(systemName: "message.badge.circle.fill")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 80, height: 80)
+                .foregroundStyle(.blue.gradient)
+            
+            VStack(spacing: 8) {
                 Text(String(localized: "Mac Message Backup"))
-                    .font(.title)
+                    .font(.title2)
                     .fontWeight(.bold)
                 
-                Text(String(localized: "A lightweight backup solution for iMessage and Call History"))
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                
                 Text(String(format: String(localized: "Version: %@"), "1.0.0"))
-                    .font(.caption2)
+                    .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
             
             Divider()
+                .frame(width: 300)
             
-            // 说明
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(spacing: 12) {
                 Text(String(localized: "Inspired by SMS Backup+ for Android"))
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .font(.body)
                 
-                Text("• " + String(localized: "Backup Messages to Gmail"))
-                    .font(.caption)
-                
-                Text("• " + String(localized: "Backup Call Log to Gmail"))
-                    .font(.caption)
-                
-                Text("• " + String(localized: "Backup Call Log to Calendar"))
-                    .font(.caption)
+                VStack(alignment: .leading, spacing: 8) {
+                    Label(String(localized: "Backup Messages to Gmail"), systemImage: "envelope")
+                    Label(String(localized: "Backup Call Log to Gmail"), systemImage: "phone")
+                    Label(String(localized: "Backup Call Log to Calendar"), systemImage: "calendar")
+                }
+                .font(.callout)
+                .foregroundStyle(.secondary)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
             
             Spacer()
+            
+            Text("Copyright © 2026 ProcessZero Team. All rights reserved.")
+                .font(.caption2)
+                .foregroundStyle(.tertiary)
         }
+        .padding(40)
     }
     
-    // MARK: - Actions
+    // MARK: - Logic
     
     private func testConnection() {
         testingConnection = true
@@ -634,13 +434,11 @@ struct SettingsView: View {
         
         Task {
             do {
-                // 保存当前设置
                 appState.config.email = email
                 if let service = appState.imapService {
                     try service.savePassword(password)
                 }
                 
-                // 测试连接
                 if let service = appState.imapService {
                     let success = try await service.testConnection()
                     await MainActor.run {
@@ -658,25 +456,16 @@ struct SettingsView: View {
     }
     
     private func saveSettings() {
-        // Check if email changed
         let emailChanged = appState.config.email != email
-        
         appState.config.email = email
         
         if !password.isEmpty {
             if let service = appState.imapService {
                 try? service.savePassword(password)
             }
-        } else if emailChanged {
-            // If email changed and no new password provided, 
-            // the new email has no password in keychain (unless previously saved).
-            // We do NOT delete the old email's password here just in case,
-            // but we don't save an empty one for the new email.
         }
         
         appState.saveConfig()
-        
-        // Refresh status based on actual keychain state for the (possibly new) email
         appState.refreshGmailStatus()
         
         if appState.gmailConnected {
@@ -685,106 +474,7 @@ struct SettingsView: View {
             appState.addLog(String(localized: "⚠️ Settings saved but Gmail not connected"), type: .warning)
         }
         
-        dismiss() // Close on save
-    }
-}
-
-// MARK: - 自定义组件
-
-struct TabButton: View {
-    let title: String
-    let icon: String
-    let isSelected: Bool
-    let action: () -> Void
-    
-    var body: some View {
-        Button(action: action) {
-            VStack(spacing: 6) {
-                Image(systemName: icon)
-                    .font(.title3)
-                Text(title)
-                    .font(.caption)
-            }
-            .foregroundStyle(isSelected ? .blue : .secondary)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 8)
-            .background(isSelected ? Color.blue.opacity(0.1) : Color.clear)
-            .cornerRadius(8)
-            .contentShape(Rectangle()) // Ensure the entire area is tappable even when transparent
-        }
-        .buttonStyle(.plain)
-        .focusable(false) // Remove focus ring (blue border) causing confusion
-    }
-}
-
-struct SettingsSection<Content: View>: View {
-    let title: String
-    @ViewBuilder let content: Content
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text(title)
-                .font(.headline)
-                .foregroundStyle(.primary)
-            
-            content
-        }
-    }
-}
-
-struct SettingsTextField: View {
-    let title: String
-    let placeholder: String
-    @Binding var text: String
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(title)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-            TextField(placeholder, text: $text)
-                .textFieldStyle(.roundedBorder)
-        }
-    }
-}
-
-struct SettingsSecureField: View {
-    let title: String
-    let placeholder: String
-    @Binding var text: String
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(title)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-            SecureField(placeholder, text: $text)
-                .textFieldStyle(.roundedBorder)
-        }
-    }
-}
-
-struct SettingsToggle: View {
-    let title: String
-    var description: String? = nil
-    @Binding var isOn: Bool
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 2) {
-            HStack {
-                Text(title)
-                    .font(.body)
-                Spacer()
-                Toggle("", isOn: $isOn)
-                    .toggleStyle(.switch)
-                    .labelsHidden()
-            }
-            if let description = description {
-                Text(description)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-        }
+        // dismiss() // Optional: keep settings open after save
     }
 }
 

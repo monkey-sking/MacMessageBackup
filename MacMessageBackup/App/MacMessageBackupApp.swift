@@ -285,6 +285,7 @@ class AppState: ObservableObject {
         let timestamp: Date
         let message: String
         let type: LogType
+        let category: LogCategory
         
         enum LogType {
             case info, success, error, warning
@@ -307,10 +308,24 @@ class AppState: ObservableObject {
                 }
             }
         }
+        
+        enum LogCategory: String, CaseIterable, Identifiable {
+            case system = "System"
+            case backup = "Backup"
+            
+            var id: String { rawValue }
+            
+            var displayName: String {
+                switch self {
+                case .system: return String(localized: "System")
+                case .backup: return String(localized: "Backup")
+                }
+            }
+        }
     }
     
     /// Add a log entry
-    func addLog(_ message: String, type: LogEntry.LogType = .info) {
+    func addLog(_ message: String, type: LogEntry.LogType = .info, category: LogEntry.LogCategory = .system) {
         // Log to persistent file
         switch type {
         case .info: Logger.shared.info(message)
@@ -327,7 +342,7 @@ class AppState: ObservableObject {
                 return
             }
             
-            self.logEntries.append(LogEntry(timestamp: Date(), message: message, type: type))
+            self.logEntries.append(LogEntry(timestamp: Date(), message: message, type: type, category: category))
             // Keep only last 30 entries to reduce memory
             if self.logEntries.count > 30 {
                 self.logEntries.removeFirst()
@@ -338,6 +353,15 @@ class AppState: ObservableObject {
     /// Clear all logs
     func clearLogs() {
         logEntries.removeAll()
+    }
+    
+    /// Get filtered logs
+    func filteredLogs(category: LogEntry.LogCategory?) -> [LogEntry] {
+        let entries = logEntries.reversed() // Show newest first
+        guard let category = category else {
+            return Array(entries)
+        }
+        return entries.filter { $0.category == category }
     }
     
     // Temporary variables to track stats at backup start (for real-time update)
@@ -393,7 +417,7 @@ class AppState: ObservableObject {
                 let shouldLog = !skipKeywords.contains { message.contains($0) }
                 
                 if shouldLog {
-                    self.addLog(message, type: message.contains("failed") || message.contains("error") ? .error : .info)
+                    self.addLog(message, type: message.contains("failed") || message.contains("error") ? .error : .info, category: .backup)
                 }
             }
         }
@@ -429,7 +453,7 @@ class AppState: ObservableObject {
                     
                     // Log the result
                     if isAutoBackup {
-                        self?.addLog(String(localized: "Auto backup completed: ") + backupResult.summary, type: .success)
+                        self?.addLog(String(localized: "Auto backup completed: ") + backupResult.summary, type: .success, category: .backup)
                     } else {
                         // Show success alert only for manual backup
                         self?.activeAlert = AlertItem(
@@ -437,12 +461,14 @@ class AppState: ObservableObject {
                             message: backupResult.summary,
                             type: .success
                         )
+                        // Also add to backup log
+                        self?.addLog(String(localized: "Manual backup completed"), type: .success, category: .backup)
                     }
                 case .failure(let error):
                     self?.statusMessage = "Error: \(error.localizedDescription)"
                     
                     if isAutoBackup {
-                        self?.addLog(String(localized: "Auto backup failed: ") + error.localizedDescription, type: .error)
+                        self?.addLog(String(localized: "Auto backup failed: ") + error.localizedDescription, type: .error, category: .backup)
                     } else {
                         // Show error alert only for manual backup
                         self?.activeAlert = AlertItem(
@@ -450,6 +476,8 @@ class AppState: ObservableObject {
                             message: String(localized: "Error: ") + error.localizedDescription,
                             type: .error
                         )
+                        // Also add to backup log
+                        self?.addLog(String(localized: "Manual backup failed: ") + error.localizedDescription, type: .error, category: .backup)
                     }
                 }
             }

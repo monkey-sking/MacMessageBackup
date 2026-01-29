@@ -20,9 +20,13 @@ echo "   Project: $PROJECT_DIR"
 # Check if TEAM_ID is set
 if [ -z "$TEAM_ID" ]; then
     echo "⚠️  Warning: TEAM_ID not set in scripts/config.sh. Signing may fail."
-    CODE_SIGN_FLAGS=""
+    CODE_SIGN_FLAGS=()
 else
-    CODE_SIGN_FLAGS="DEVELOPMENT_TEAM=$TEAM_ID CODE_SIGN_STYLE=Manual CODE_SIGN_IDENTITY=\"Developer ID Application\""
+    CODE_SIGN_FLAGS=(
+        "DEVELOPMENT_TEAM=$TEAM_ID" 
+        "CODE_SIGN_STYLE=Manual" 
+        "CODE_SIGN_IDENTITY=Developer ID Application"
+    )
     
     # Generate ExportOptions.plist dynamically to avoid hardcoding Team ID
     cat <<EOF > "$PROJECT_DIR/scripts/ExportOptions.plist"
@@ -54,7 +58,7 @@ xcodebuild -project "$PROJECT_DIR/$PROJECT" \
     -scheme "$SCHEME" \
     -configuration Release \
     -archivePath "$BUILD_DIR/MacMessageBackup.xcarchive" \
-    $CODE_SIGN_FLAGS \
+    "${CODE_SIGN_FLAGS[@]}" \
     archive \
     -quiet
 

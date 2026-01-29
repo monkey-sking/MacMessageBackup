@@ -410,3 +410,21 @@
 /* Direction (used in backup subjects) */
 "Sent to" = "发给";
 "Received from" = "来自";
+
+/* New Settings UI Refactor - 2026 */
+"Copyright © 2026 ProcessZero Team. All rights reserved." = "版权所有 © 2026 ProcessZero Team. 保留所有权利。";
+"All Logs" = "全部日志";
+"System" = "系统";
+"Backup" = "备份";
+"Account Info" = "账户信息";
+"Gmail Connected" = "Gmail 已连接";
+"Gmail Not Connected" = "Gmail 未连接";
+"Please enter your credentials below." = "请在下方输入您的凭据。";
+"Settings saved but Gmail not connected" = "设置已保存，但 Gmail 尚未连接";
+"⚠️ Hidden mode enabled." = "⚠️ 隐藏模式已启用。";
+"Done" = "完成";
+"Advanced" = "高级";
+"Permission required" = "需要权限";
+"Connect Calendar" = "连接日历";
+"Common placeholders: {contact}, {date}, {body}" = "常用占位符: {contact}, {date}, {body}";
+"Please grant Calendar access" = "请授予日历访问权限";

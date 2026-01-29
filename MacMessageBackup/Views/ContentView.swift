@@ -11,6 +11,7 @@ struct ContentView: View {
     @State private var showCalendarPermission = false // New sheet for calendar
     @State private var isLogExpanded = true
     @State private var settingsId = UUID()
+    @State private var logFilter: AppState.LogEntry.LogCategory? = nil // nil = All
     
     var body: some View {
         mainContentView
@@ -308,12 +309,25 @@ struct ContentView: View {
                 
 
                 
+    
+    // ... inside mainContentView
                 // Collapsible log view
                 DisclosureGroup(
                     isExpanded: $isLogExpanded,
                     content: {
-                        VStack(alignment: .leading, spacing: 4) {
-                            if appState.logEntries.isEmpty {
+                        VStack(alignment: .leading, spacing: 8) {
+                            // Category Filter
+                            Picker("Filter", selection: $logFilter) {
+                                Text(String(localized: "All Logs")).tag(Optional<AppState.LogEntry.LogCategory>.none)
+                                ForEach(AppState.LogEntry.LogCategory.allCases) { category in
+                                    Text(category.displayName).tag(Optional(category))
+                                }
+                            }
+                            .pickerStyle(.segmented)
+                            .labelsHidden()
+                            .controlSize(.small)
+                            
+                            if appState.filteredLogs(category: logFilter).isEmpty {
                                 Text(String(localized: "No log entries."))
                                     .font(.callout)
                                     .foregroundStyle(.secondary)
@@ -322,7 +336,7 @@ struct ContentView: View {
                             } else {
                                 ScrollView {
                                     LazyVStack(alignment: .leading, spacing: 4) {
-                                        ForEach(appState.logEntries.reversed()) { entry in
+                                        ForEach(appState.filteredLogs(category: logFilter)) { entry in
                                             HStack(alignment: .top, spacing: 8) {
                                                 Image(systemName: entry.type.icon)
                                                     .foregroundStyle(entry.type.color)
@@ -354,16 +368,26 @@ struct ContentView: View {
                         }
                     },
                     label: {
-                        Text(String(localized: "Operation Log"))
-                            .font(.headline)
-                            .foregroundStyle(.primary)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                withAnimation {
-                                    isLogExpanded.toggle()
-                                }
+                        HStack {
+                            Text(String(localized: "Operation Log"))
+                                .font(.headline)
+                                .foregroundStyle(.primary)
+                            Spacer()
+                            if let filter = logFilter {
+                                Text(filter.displayName)
+                                    .font(.caption)
+                                    .padding(.horizontal, 6)
+                                    .padding(.vertical, 2)
+                                    .background(Color.secondary.opacity(0.2))
+                                    .cornerRadius(4)
                             }
+                        }
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            withAnimation {
+                                isLogExpanded.toggle()
+                            }
+                        }
                     }
                 )
                 .padding(.horizontal, 40)
